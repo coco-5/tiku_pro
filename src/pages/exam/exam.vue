@@ -2,6 +2,7 @@
     <view class="page-exam">
         <c-navigation-bar
             title="设置备考科目"
+            style="background:#F2F9FF;"
         >
         </c-navigation-bar>
 

@@ -97,6 +97,9 @@
 </template>
 
 <script>
+// type 1做题 2解析 3查看，没有解析
+// mode 1题海 2章节 3历年真题 4模拟考试
+// state 1练习 2考试
 import utils from '@/utils/utils'
 export default {
     props:{

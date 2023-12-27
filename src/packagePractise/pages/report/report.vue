@@ -1,8 +1,8 @@
 <template>
     <view class="page-report">
         <c-navigation-bar
-            title="试卷详情"
-            style="background:linear-gradient(180deg, #E0ECFF 0%, rgba(255,255,255,0.9) 100%);"
+            style="background:#0086FF;"
+            backType="2"
         >
         </c-navigation-bar>
     </view>

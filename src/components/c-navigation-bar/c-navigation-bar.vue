@@ -20,11 +20,33 @@
             >
                 <view class="nav-bar-left">
                     <slot name="left">
-                        <view 
-                            class="goback" 
-                            v-if="isShowBack" 
-                            @click="handlerGoBack"
-                        ></view>
+                        <template v-if="backType == 1">
+                            <view class="menu1">
+                                <view class="back">
+                                    <image src="https://oss-hqwx-edu24ol.hqwx.com/miniapp/socrazy/tikupro/common/ico_back.png" />
+                                </view>
+                                <view class="home">
+                                    <image src="https://oss-hqwx-edu24ol.hqwx.com/miniapp/socrazy/tikupro/common/ico_home.png" />
+                                </view>
+                            </view>
+                        </template>
+                        <template v-else-if="backType == 2">
+                            <view class="menu2">
+                                <view class="back">
+                                    <image src="https://oss-hqwx-edu24ol.hqwx.com/miniapp/socrazy/tikupro/common/ico_back.png" />
+                                </view>
+                                <view class="home">
+                                    <image src="https://oss-hqwx-edu24ol.hqwx.com/miniapp/socrazy/tikupro/common/ico_home1.png" />
+                                </view>
+                            </view>
+                        </template>
+                        <template v-else>
+                            <view 
+                                class="goback" 
+                                v-if="isShowBack" 
+                                @click="handlerGoBack"
+                            ></view>
+                        </template>
                     </slot>
                 </view>
                 <view class="nav-bar-title-box">
@@ -49,6 +71,9 @@ export default {
         gobackCallback:{
             type:[Function,String],
             default:''
+        },
+        backType:{
+            type:[Number,String]
         }
     },
     data(){
@@ -100,7 +125,6 @@ export default {
 .navigation-bar {
     background:#FFF;
 }
-
 .fix {
     width:100%;
     position:fixed;
@@ -120,7 +144,7 @@ export default {
     .goback {
         width:48rpx;
         height:48rpx;
-        background:url('https://oss-hqwx-edu24ol.hqwx.com/miniapp/tushu_hqwx/icon-back.png') no-repeat center / 100%;
+        background:url('https://oss-hqwx-edu24ol.hqwx.com/miniapp/socrazy/tikupro/common/ico_back.png') no-repeat center / 100%;
     }
     .nav-bar-title-box {
         .title {
@@ -128,6 +152,72 @@ export default {
             font-weight:bold;
             color:#010B16;
             text-align:center;
+        }
+    }
+}
+
+.menu1,
+.menu2 {
+    display:flex;
+    width:154rpx;
+    height:58rpx;
+    line-height:1;
+    border-radius:32rpx;
+    view {
+        box-sizing:border-box;
+        display:inline-block;
+        width:50%;
+        height:100%;
+        text-align:center;
+        vertical-align:middle;
+        image {
+            vertical-align:middle;
+        }
+        &.back {
+            position:relative;
+            &:before {
+                content:'';
+                position:absolute;
+                top:50%;
+                right:0;
+                transform:translateY(-50%);
+                width:1px;
+                height:24rpx;
+            }
+            image {
+                width:48rpx;
+                height:48rpx;
+            }
+        }
+        &.home {
+            margin-top:8rpx;
+            image {
+                width:34rpx;
+                height:34rpx;
+            }
+        }
+    }
+}
+
+.menu1 {
+    border:1px solid rgba(151, 151, 151, 0.2);
+    view {
+        &.back {
+            &:before {
+                background:rgba(151, 151, 151, 0.2);
+            }
+        }
+    }
+}
+
+.menu2 {
+    background:rgba(255,255,255,.6);
+    border:1px solid rgba(151, 151, 151, 0.2);
+    view {
+        &.back {
+            &:before {
+                background:#FFF;
+            }
         }
     }
 }

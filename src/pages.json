@@ -46,6 +46,12 @@
 					}
 				},
 				{
+					"path": "pages/paperList/paperList",
+					"style": {
+						"navigationStyle":"custom"
+					}
+				},
+				{
 					"path": "pages/practise/practise",
 					"style": {
 						"navigationStyle":"custom"

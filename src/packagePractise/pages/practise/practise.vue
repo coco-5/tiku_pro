@@ -2,6 +2,7 @@
     <view class="page-practise">
         <c-navigation-bar
             title="历年真题"
+            backType="1"
             @cbNavigationHeight="cbNavigationHeight"
         >
         </c-navigation-bar>

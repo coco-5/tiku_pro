@@ -8,16 +8,18 @@
             :style="style"
             v-if="isShowNav"
         >
-            <view 
-                class="item"
-                :class="index == current ? 'on' : '' "
-                @click="go(item)"
-                v-for="(item,index) in bottomList"
-                :key="index"
-            >
-                <view class="icon"></view>
-                <view class="name">{{item.name}}</view>
-            </view> 
+            <slot name="content">
+                <view 
+                    class="item"
+                    :class="index == current ? 'on' : '' "
+                    @click="go(item)"
+                    v-for="(item,index) in bottomList"
+                    :key="index"
+                >
+                    <view class="icon"></view>
+                    <view class="name">{{item.name}}</view>
+                </view> 
+            </slot>
         </view>
     </view>
 </template>

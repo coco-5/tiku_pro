@@ -36,6 +36,8 @@
                 <view class="btn">练习</view>
             </view>
         </view>
+
+        <c-bottom></c-bottom>
     </view>
 </template>
 

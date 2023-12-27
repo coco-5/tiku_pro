@@ -83,9 +83,9 @@ export default {
         position:absolute;
         top:0;
         right:0;
-        width:86rpx;
+        width:100rpx;
         height:96rpx;
-        background:#EEE;
+        background:#fff url("https://oss-hqwx-edu24ol.hqwx.com/miniapp/tiku_pro/icon_tab_more.png") no-repeat 16rpx center/28rpx auto;
     }
 }
 </style>

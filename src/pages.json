@@ -1,0 +1,66 @@
+{
+	"indexPage":"pages/index/index",
+	"pages": [
+		{
+			"path": "pages/index/index",
+			"style": {
+				"navigationBarTitleText": "index",
+				"navigationBarBackgroundColor":"#FFF",
+				"navigationBarTextStyle":"black",
+				"navigationStyle":"custom"
+			}
+		},
+		{
+			"path": "pages/exam/exam",
+			"style": {
+				"navigationBarTitleText": "",
+				"navigationStyle":"custom"
+			}
+		}
+	],
+	"subPackages":[
+		{
+			"root": "packageUser",
+			"pages": [
+				{
+					"path": "pages/user/user",
+					"style": {
+						"navigationStyle":"custom"
+					}
+				}
+			]
+        },
+		{
+			"root": "packagePractise",
+			"pages": [
+				{
+					"path": "pages/report/report",
+					"style": {
+						"navigationStyle":"custom"
+					}
+				},
+				{
+					"path": "pages/paperDetail/paperDetail",
+					"style": {
+						"navigationStyle":"custom"
+					}
+				},
+				{
+					"path": "pages/practise/practise",
+					"style": {
+						"navigationStyle":"custom"
+					}
+				}
+			]
+        }
+	],
+	"wxResource":{},
+	"easycom": {
+		"autoscan": true,
+		"custom": {
+			// "^hq-(.*)": "@/hqview-ui/components/hq-$1/hq-$1.vue",
+		  	"^hq-(.*)": "@hqwx/hqview-ui/components/hq-$1/hq-$1.vue",
+		  	"^c-(.*)": "@/components/c-$1/c-$1.vue"
+		}
+	}
+}

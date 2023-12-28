@@ -22,20 +22,32 @@
                     <slot name="left">
                         <template v-if="backType == 1">
                             <view class="menu1">
-                                <view class="back">
+                                <view 
+                                    class="back"
+                                    @click="handlerGoBack"
+                                >
                                     <image src="https://oss-hqwx-edu24ol.hqwx.com/miniapp/socrazy/tikupro/common/ico_back.png" />
                                 </view>
-                                <view class="home">
+                                <view 
+                                    class="home"
+                                    @click="goHome"
+                                >
                                     <image src="https://oss-hqwx-edu24ol.hqwx.com/miniapp/socrazy/tikupro/common/ico_home.png" />
                                 </view>
                             </view>
                         </template>
                         <template v-else-if="backType == 2">
                             <view class="menu2">
-                                <view class="back">
+                                <view 
+                                    class="back"
+                                    @click="handlerGoBack"
+                                >
                                     <image src="https://oss-hqwx-edu24ol.hqwx.com/miniapp/socrazy/tikupro/common/ico_back.png" />
                                 </view>
-                                <view class="home">
+                                <view 
+                                    class="home"
+                                    @click="goHome"
+                                >
                                     <image src="https://oss-hqwx-edu24ol.hqwx.com/miniapp/socrazy/tikupro/common/ico_home1.png" />
                                 </view>
                             </view>
@@ -106,6 +118,11 @@ export default {
             }else{
                 this.gobackCallback(this.goback)
             }
+        },
+        goHome(){
+            uni.redirectTo({
+                url:'/pages/index/index'
+            })
         },
         goback(){
             let currentPages = getCurrentPages()

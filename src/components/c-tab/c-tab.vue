@@ -17,7 +17,11 @@
                 {{item}}
             </view>  
         </scroll-view>
-        <view class="more"></view>
+        <view 
+            class="more"
+            @click="more"
+        >
+        </view>
     </view>
 </template>
 
@@ -48,6 +52,9 @@ export default {
     methods:{
         changeIndex(index){
             this.$emit('change', index)
+        },
+        more(){
+            this.$emit('more')
         }
     }
 }
@@ -85,7 +92,8 @@ export default {
         right:0;
         width:100rpx;
         height:96rpx;
-        background:#fff url("https://oss-hqwx-edu24ol.hqwx.com/miniapp/tiku_pro/icon_tab_more.png") no-repeat 16rpx center/28rpx auto;
+        background:#fff url("https://oss-hqwx-edu24ol.hqwx.com/miniapp/tiku_pro/icon_tab_more.png") no-repeat;
+        background-size:contain;
     }
 }
 </style>

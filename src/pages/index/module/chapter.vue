@@ -91,7 +91,7 @@ export default {
         },
         goChapter(){
             uni.navigateTo({
-                url:`/pages/chapter/chapter?gid=`
+                url:`/packagePractise/pages/chapter/chapter?gid=`
             })
         }
     }

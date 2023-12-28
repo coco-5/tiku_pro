@@ -20,7 +20,7 @@
                 ></view>
                 <view 
                     class="next" 
-                    @click="next"
+                    @click="next" 
                 ></view>
                 <view class="menu-list">
                     <view 
@@ -55,7 +55,7 @@
                 <view 
                     class="datika" 
                     @click="isShowDialog = true"
-                    v-if="list.length > 1"
+                    v-if="list.length > 1" 
                 >
                     <view class="pic"></view>
                     <view class="text">答题卡</view>
@@ -93,6 +93,45 @@
 
             </view>
         </view>
+
+        <!-- 答题卡弹窗 -->
+        <view 
+            class="dialog" 
+            v-if="isShowDialog"
+        >
+            <view class="dialog-mask"></view>
+            <view 
+                class="dialog-content"
+                :style="style"
+            >
+                <view 
+                    class="close" 
+                    @click="isShowDialog = false">
+                </view>
+                <view class="title">答题卡</view>
+                <view class="list">
+                    <view 
+                        class="group" 
+                        v-for="(item,index) in ansCardList" 
+                        :key="index"
+                    >
+                        <view class="group-name">{{item.groupName}}</view>
+                        <view 
+                            class="group-list" 
+                            v-if="item.sort.length > 0"
+                        >
+                            <view 
+                                v-for="(v,i) in item.sort" 
+                                :key="i" 
+                                @click="change(v.index-1)"
+                            >
+                                {{v.index}}
+                            </view>
+                        </view>
+                    </view>
+                </view>
+            </view>
+        </view>
     </view>
 </template>
 
@@ -116,7 +155,10 @@ export default {
         isShareLanding:{
             type:Boolean,
             default:false
-        }
+        },
+        ansCardList:{
+            type:Array
+        },
     },
     watch:{
         list:{
@@ -131,7 +173,8 @@ export default {
     },
     data(){
         return {
-            style:''
+            style:'',
+            isShowDialog:false,
         }
     },
     created(){
@@ -211,7 +254,6 @@ export default {
         text-align:center;
     }
 }
-
 .footer-content2 {
     height:108rpx;
     padding:0 32rpx;
@@ -279,4 +321,82 @@ export default {
         color:#FFF;
     }
 }
+.dialog-mask {
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    left:0;
+    top:0;
+    background: rgba(0,0,0,.7);
+    z-index: 9;
+}
+.dialog-content {
+    width: 100%;
+    border-radius: 24rpx 24rpx 0px 0px;
+    position: fixed;
+    left:0;
+    bottom:0;
+    background: #fff;
+    z-index: 9;
+    .close {
+        width: 58rpx;
+        height: 58rpx;
+        position: absolute;
+        right:18rpx;
+        top:18rpx;
+        background: url('http://oss-hqwx-edu24ol.hqwx.com/miniapp/swan_tiku_pro/icon-close.png') no-repeat center / 100% 100%;
+    }
+    .title {
+        padding-top: 56rpx;
+        font-size: 36rpx;
+        color: #3D4044;
+        line-height: 44rpx;
+        text-align: center;
+        margin-bottom: 32rpx;
+    }
+    .list {
+        padding: 0 0 0 30rpx;
+        min-height: 210rpx;
+        max-height: 730rpx;
+        overflow-y: auto;
+        .group {
+            margin-bottom: 16rpx;
+            .group-name{
+                font-size: 28rpx;
+                font-weight: 500;
+                color: #3D4044;
+                line-height: 40rpx;
+                margin-bottom: 16rpx;
+            }
+            .group-list {
+                display: flex;
+                flex-wrap: wrap;
+                &>view{
+                    width: 70rpx;
+                    height: 70rpx;
+                    border-radius: 50%;
+                    border: 2rpx solid #E4E9EC;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    font-size: 28rpx;
+                    font-weight: 500;
+                    color: #3D4044;
+                    margin-bottom: 24rpx;
+                    margin-right: 54rpx;
+                    box-sizing: border-box;
+                    &:nth-child(6n){
+                        margin-right: 0;
+                    }
+                }
+                .active {
+                    border-color:#548cfd;
+                    background: #548cfd;
+                    color:#fff;
+                }
+            }
+        }
+        
+    }
+} 
 </style>

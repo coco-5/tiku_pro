@@ -24,6 +24,7 @@
             :options="options"
             :list="questionList"
             :current="current"
+            :ansCardList="ansCardList"
             @cbFooterHeight="cbFooterHeight"
             @change="change"
             @submit="submit"
@@ -44,10 +45,34 @@ export default {
             current:0,//当前做题的索引 
             questionList:['',''],//题目列表
             contentStyle:'',
+            ansCardList:[],
         }
     },
     onLoad(e){
         this.options = e
+
+        this.ansCardList = [
+            {
+                groupName:'1111',
+                sort:[
+                    {index:1,type:0},
+                    {index:2,type:1},
+                    {index:3,type:2},
+                    {index:4,type:3},
+                    {index:5,type:0}
+                ]
+            },
+            {
+                groupName:'2222',
+                sort:[
+                    {index:1,type:0},
+                    {index:2,type:1},
+                    {index:3,type:2},
+                    {index:4,type:3},
+                    {index:5,type:0}
+                ]
+            }
+        ]
     },
     onShow(){
 

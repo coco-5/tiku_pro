@@ -9,13 +9,6 @@
 				"navigationBarTextStyle":"black",
 				"navigationStyle":"custom"
 			}
-		},
-		{
-			"path": "pages/exam/exam",
-			"style": {
-				"navigationBarTitleText": "",
-				"navigationStyle":"custom"
-			}
 		}
 	],
 	"subPackages":[
@@ -24,6 +17,23 @@
 			"pages": [
 				{
 					"path": "pages/user/user",
+					"style": {
+						"navigationStyle":"custom"
+					}
+				}
+			]
+        },
+		{
+			"root": "packageExam",
+			"pages": [
+				{
+					"path": "pages/exam/exam",
+					"style": {
+						"navigationStyle":"custom"
+					}
+				},
+				{
+					"path": "pages/subject/subject",
 					"style": {
 						"navigationStyle":"custom"
 					}
@@ -53,6 +63,12 @@
 				},
 				{
 					"path": "pages/practise/practise",
+					"style": {
+						"navigationStyle":"custom"
+					}
+				},
+				{
+					"path": "pages/chapter/chapter",
 					"style": {
 						"navigationStyle":"custom"
 					}

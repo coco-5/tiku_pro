@@ -16,7 +16,10 @@
                     v-for="(item,index) in bottomList"
                     :key="index"
                 >
-                    <view class="icon"></view>
+                    <view 
+                        class="icon"
+                        :class="item.icon"
+                    ></view>
                     <view class="name">{{item.name}}</view>
                 </view> 
             </slot>
@@ -62,9 +65,9 @@ export default {
     },
     methods:{
         go(item){
-            let url = ``
+            let url = item.type == 'index' ? '/pages/index/index' : '/packageUser/pages/user/user'
 
-            uni.switchTab({
+            uni.reLaunch({
                 url:url
             })
         }
@@ -92,9 +95,25 @@ export default {
         text-align:center;
         .icon {
             margin:14rpx auto 4rpx;
-            width:44rpx;
-            height:44rpx;
-            background:#EEE;
+            width:48rpx;
+            height:48rpx;
+            background-repeat:no-repeat;
+            background-size:contain;
+            &.home {
+                background-image:url("https://oss-hqwx-edu24ol.hqwx.com/miniapp/socrazy/tikupro/bottom/ico_home.png");
+            }
+            &.user {
+                background-image:url("https://oss-hqwx-edu24ol.hqwx.com/miniapp/socrazy/tikupro/bottom/ico_user1.png");
+            }
+        }
+        &.on {
+            color:#2575FF;
+            .home {
+                background-image:url("https://oss-hqwx-edu24ol.hqwx.com/miniapp/socrazy/tikupro/bottom/ico_home.png");
+            }
+            .user {
+                background-image:url("https://oss-hqwx-edu24ol.hqwx.com/miniapp/socrazy/tikupro/bottom/ico_user1.png");
+            }
         }
     }
 }

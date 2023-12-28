@@ -1,5 +1,5 @@
 <template>
-    <view class="page-exam">
+    <view class="page-subject">
         <c-navigation-bar
             title="设置备考科目"
             style="background:#F2F9FF;"
@@ -75,7 +75,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.page-exam {
+.page-subject {
     min-height:100vh;
     background:#F2F9FF;
 }

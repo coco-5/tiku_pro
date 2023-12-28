@@ -4,6 +4,7 @@
             title="个人中心"
             style="background:linear-gradient(180deg, #E0ECFF 0%, rgba(255,255,255,0.9) 100%);"
         >
+            <template #left></template>
         </c-navigation-bar>
 
         <view 
@@ -38,6 +39,12 @@
             @cbCloseUserinfo="cbCloseUserinfo"
         >
         </c-userinfo>
+
+        <c-bottom
+            :current="1"
+            :isShowNav="true"
+        >
+        </c-bottom>
     </view>
 </template>
 

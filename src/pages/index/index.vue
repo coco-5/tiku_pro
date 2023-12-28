@@ -4,7 +4,12 @@
             style="background:linear-gradient(180deg, #E0ECFF 0%, rgba(255,255,255,0.9) 100%);"
         >
             <template #left>
-                <view class="exam">一级建造师</view>
+                <view 
+                    class="exam"
+                    @click="goExam"
+                >
+                    {{examInfo.name || ''}}
+                </view>
             </template>
         </c-navigation-bar>
         
@@ -12,6 +17,7 @@
             :list="subjectList"
             :current="subjectIndex"
             @change="changeSubject"
+            @more="moreSubject"
         >
         </c-tab>
 
@@ -55,41 +61,51 @@ export default {
     },
     onLoad(e){
         this.options = e
-
-        this.matchExamInfo()
-
-        this.subjectList = ['中经','初会','教资','高经','一造','消费设施操作员','中经','初会','教资','高经','一造','消费设施操作员']
     },
     onShow(){
-        if(this.examInfo){
-            let timeStamp = new Date().getTime() * 1
-            this.$set(this.examInfo,'timeStamp',timeStamp)
-        }
+        this.matchExamInfo()
+
+        this.getSubjectList()
     },
 	methods:{
         matchExamInfo(){
             let examInfo = {}
 
-            if(this.options.examId){
+            /* if(this.options.examId){
                 examInfo = {
-                    examId:this.options.examId,
-                    examName:''
+                    id:this.options.examId,
+                    name:''
                 }
             }else if(uni.getStorageSync('examInfo')){
                 examInfo = uni.getStorageSync('examInfo')
             }else{
-
-            }
+                this.goExam()
+            } */
 
             examInfo = {
-                examId:5594,
-                examName:'国家公务员'
+                id:5594,
+                name:'国家公务员'
             }
+            uni.setStorageSync('examInfo',examInfo)
 
             this.examInfo = examInfo
         },
+        getSubjectList(){
+            this.subjectList = ['中经','初会','教资','高经','一造','消费设施操作员','中经','初会','教资','高经','一造','消费设施操作员']
+        },
         changeSubject(index){
             this.subjectIndex = index
+        },
+        goExam(){
+            return
+            uni.navigateTo({
+                url:'/packageExam/pages/subject/subject'
+            })
+        },
+        moreSubject(){
+            uni.navigateTo({
+                url:'/packageExam/pages/subject/subject'
+            })
         }
     }
 }

@@ -1,11 +1,12 @@
 <template>
     <view class="paper">
-        <view class="hd">章节练习<text>刷题 题目大合集</text></view>
+        <view class="hd">真题考试<text>刷题 题目大合集</text></view>
         <view class="bd">
             <view class="tab">
                 <view 
                     class="item"
                     :class="{on:tabIndex == index}"
+                    @click="changeTab(index)"
                     v-for="(item,index) in tabList"
                     :key="index"
                 >
@@ -35,9 +36,17 @@
                             </view>
                         </view>
                     </view>
-                    <view class="btn">练习</view>
+                    <view 
+                        class="btn"
+                        @click="goDetail(item)"
+                    >   
+                        练习
+                    </view>
                 </view>
-                <view class="more">
+                <view 
+                    class="more"
+                    @click="goMore"
+                >
                     <text>查看更多</text>
                 </view>
             </view>
@@ -69,12 +78,34 @@ export default {
             tabIndex:0,
             paperList:[{
                 list:[1,2,3]
-            },{}]
+            },{
+                list:[1,2]
+            }]
         }
     },
     mounted(){
     },
-    methods:{}
+    methods:{
+        changeTab(index){
+            this.tabIndex = index
+        },
+        goDetail(item){
+            let params = {
+                paperId:item.id
+            }
+            uni.navigateTo({
+                url : `/packagePractise/pages/paperDetail/paperDetail?${this.$hq.utils.paramsStringify(params)}`
+            })
+        },
+        goMore(){
+            let params = {
+                paperType:this.tabIndex    
+            }
+            uni.navigateTo({
+                url : `/packagePractise/pages/paperList/paperList?${this.$hq.utils.paramsStringify(params)}`
+            })
+        }
+    }
 }
 </script>
 

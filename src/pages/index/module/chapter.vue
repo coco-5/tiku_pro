@@ -32,7 +32,6 @@
 </template>
 
 <script>
-import { getUserExerciseApi } from '@/utils/api'
 export default {
     props:{
         examInfo:{
@@ -69,7 +68,7 @@ export default {
                 {
                     type:'rate-correct',
                     name:'正确率',
-                    icon:'icon1',
+                    icon:'icon3',
                     value:0
                 }
             ]
@@ -79,16 +78,6 @@ export default {
         
     },
     methods:{
-        getUserExercise(gid){
-            let params = {
-                categoryId : gid
-            }
-            getUserExerciseApi(params).then((res)=>{
-                if(res.data.status.code == 0){
-                    this.userExercise = res.data.data
-                }
-            })
-        },
         goChapter(){
             uni.navigateTo({
                 url:`/packagePractise/pages/chapter/chapter?gid=`
@@ -140,11 +129,22 @@ export default {
                     font-size:24rpx;
                     .icon {
                         display:inline-block;
+                        margin-top:-4rpx;
                         margin-right:8rpx;
                         width:26rpx;
                         height:26rpx;
-                        background:#000;
+                        background-repeat:no-repeat;
+                        background-size:contain;
                         vertical-align:middle;
+                        &.icon1 {
+                            background-image:url("https://oss-hqwx-edu24ol.hqwx.com/miniapp/socrazy/tikupro/common/ico_pen.png");
+                        }
+                        &.icon2 {
+                            background-image:url("https://oss-hqwx-edu24ol.hqwx.com/miniapp/socrazy/tikupro/common/ico_ok.png");
+                        }
+                        &.icon3 {
+                            background-image:url("https://oss-hqwx-edu24ol.hqwx.com/miniapp/socrazy/tikupro/common/ico_ok1.png");
+                        }
                     }
                 }
                 .text {

@@ -5,15 +5,18 @@
     * App.vue的对象会被保存在wx.__uniapp2wxpack.uniSubpackage.__packInit中
     * 主小程序的原生app.js可以自己选择在合适的时候去使用App.vue中的方法和数据
     * */
+
+    import { getOpenidApi, getUserinfoApi } from '@/utils/api'
     export default {
         onLaunch: function() {
-            console.log('App Launch');
-            // uni.login({
-            //     // provider: uni.getProvider('oauth'),
-            //     success: function (loginRes) {
-            //         console.log('login',loginRes);
-            //     }
-            // });
+            //获取用户openid和用户信息
+            if(!uni.getStorageSync('openid')){
+                getOpenidApi(()=>{
+                    this.getUserinfo()
+                })
+            }else{
+                this.getUserinfo()    
+            }
         },
         onShow: function() {
             console.log('App Show')

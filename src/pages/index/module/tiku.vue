@@ -50,8 +50,8 @@ export default {
     .bd {
         position:relative;
         height:336rpx;
-        background:#FFF;
-        border:2rpx solid #FFF;
+        background:url("https://oss-hqwx-edu24ol.hqwx.com/miniapp/socrazy/tikupro/index/bg_tiku.png") #FFF no-repeat;
+        background-size:contain;
         border-radius:24rpx;
         text-align:center;
         overflow:hidden;

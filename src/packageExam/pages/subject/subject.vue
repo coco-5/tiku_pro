@@ -13,25 +13,31 @@
 
         <view class="list">
             <view class="hd"><text></text>拖拽可排序</view>
-            <view class="bd">
-                <view 
+            <movable-area class="bd">
+                <movable-view
                     class="item"
-                    v-for="(item, index) in examList"
+                    :class="dragId == index ? 'active' : ''"
+                    :y="item.y"
+                    :data-id="index"
+                    direction="vertical"
+                    @change="move"
+                    @touchend="end"
+                    v-for="(item, index) in subjectList"
                     :key="index"
                 >
                     <view class="btn"></view>
-                    <view class="name">{{item.name}}</view>
+                    <view class="name">{{item.y}} - {{item.name}}</view>
                     <view class="switch">
                         显示
                         <switch 
                             :checked="item.checked"
                             color="#2575FF"
-                            @change="change(item)"
+                            @change.stop="change(item)"
                         >
                         </switch>
                     </view>
-                </view>
-            </view>
+                </movable-view>
+            </movable-area>
         </view>
 
         <c-bottom></c-bottom>
@@ -43,32 +49,71 @@ import utils from '@/utils/utils'
 export default {
     data(){
         return {
-            examList:[
+            dragId:-1,
+            subjectList:[
                 {
                     name:"中级经济法",
-                    checked:true
+                    checked:true,
+                    y:0, 
                 },
                 {
                     name:"中级经济法11",
-                    checked:true
+                    checked:true,
+                    y:69
                 },
                 {
                     name:"中级经济法22",
-                    checked:false
+                    checked:false,
+                    y:138
                 }
             ],
+            gab:69
         }
     },
     onLoad(e){
         this.options = e
-
     },
     onShow(){
 
+        //this.subjectList[0].y = 150
     },
     methods:{
         change(item){
 
+        },
+        move(e){
+            this.y = e.detail.y
+            this.dragId = e.target.dataset.id
+        },
+        end(e){
+            //知道自己的排序
+            let subjectList = this.subjectList
+            let currentId = this.y / this.gab
+            let transferId
+
+            if(this.dragId > currentId){
+                transferId = Math.ceil(currentId)
+            }else{
+                transferId = Math.floor(currentId)
+            }
+
+            let dragItem = subjectList.splice(this.dragId, 1)
+            subjectList.splice(transferId, 0, dragItem[0])
+
+            this.$set(subjectList[0],'y',0)
+            this.$set(subjectList[1],'y',69)
+            this.$set(subjectList[2],'y',138)/* 
+            subjectList.forEach((item,index)=>{
+                item.y = index * this.gab
+                this.$set(subjectList,index,item)
+                console.log(999,'item',item)
+            })  */
+
+            this.subjectList = subjectList
+            this.dragId = -1
+            console.log(999,'subjectList',subjectList)
+
+            //this.dragId = -1
         }
     }
 }
@@ -112,14 +157,26 @@ export default {
         text-align:center;
     }
     .bd {
+        position:relative;
+        width:100%;
+        height:1000rpx;
         .item {
-            position:relative;
-            margin-bottom:24rpx;
+            box-sizing:border-box;
+            position:absolute;
+            top:0;
+            left:0;
+            z-index:1;
             padding:0 40rpx;
+            width:100%;
             height:112rpx;
             line-height:112rpx;
             background:#FFF;
             border-radius:24rpx;
+            &.active {
+                z-index:2;
+                opacity:.5;
+                background:#000;
+            }
             .btn {
                 display:inline-block;
                 margin-right:8rpx;

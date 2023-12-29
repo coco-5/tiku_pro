@@ -75,7 +75,7 @@ function request(){
             }
         }
 
-        /* if(method === 'POST'){
+        if(method === 'POST'){
             postHeader = {
                 'content-type': 'application/json',
                 'x-request-id': uuid
@@ -85,13 +85,14 @@ function request(){
         postData.sequenceNo = sequenceNo
         postData.encryptParam = data ? utils.encryptByAES(JSON.stringify(data)) : ''
 
+        /* console.log(999,'url',url)
+        console.log(999,'data',data) */
+
         postData.signature = utils.md5({
             encryptParam:postData.encryptParam || '',
             uuid:uuid || '',
             sequenceNo:sequenceNo|| ''
-        }) */
-
-        postData = data
+        })
  
         options.method = method
         options.header = Object.assign({},_this.config.header,postHeader, config.header);

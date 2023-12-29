@@ -2,9 +2,10 @@ let baseConfig = {
     appid : 'AP001',
     version : '1.0',
     pageSize : 20,
+    appName : 'tiku_pro',
     proxyApi:{
-        kjapi:'https://kjapi.hqwx.com',
-        japi:'https://japi.hqwx.com'
+        tiku:'https://www.xuexizhushou.cn',//xuexizhushou.cn
+        //http://www.river0413.top
     }
 }
 

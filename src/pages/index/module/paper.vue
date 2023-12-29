@@ -130,6 +130,7 @@ export default {
         margin-bottom:24rpx;
         height:72rpx;
         .item {
+            box-sizing:border-box;
             display:inline-block;
             margin-right:32rpx;
             width:178rpx;
@@ -143,7 +144,11 @@ export default {
             text-align:center;
             vertical-align:top;
             &.on {
+                //height:72rpx;
+                //line-height:72rpx;
                 color:#2575FF;
+                //background:url("https://oss-hqwx-edu24ol.hqwx.com/miniapp/socrazy/tikupro/common/tab.png") no-repeat;
+                //background-size:contain;
             }
         }
     }
@@ -188,13 +193,13 @@ export default {
                         vertical-align:top;
                         text {
                             display:inline-block;
-                            margin-right:4rpx;
                             width:24rpx;
                             height:24rpx;
-                            background:#EEE;
+                            background:url("https://oss-hqwx-edu24ol.hqwx.com/miniapp/socrazy/tikupro/common/ico_star1.png") no-repeat;
+                            background-size:contain;
                             vertical-align:middle;
                             &.on {
-                                background:#000;
+                                background-image:url("https://oss-hqwx-edu24ol.hqwx.com/miniapp/socrazy/tikupro/common/ico_star.png");
                             }
                         }
                     }
@@ -233,7 +238,8 @@ export default {
                     transform:translateY(-50%);
                     width:24rpx;
                     height:24rpx;
-                    background:#EEE;
+                    background:url("https://oss-hqwx-edu24ol.hqwx.com/miniapp/socrazy/tikupro/common/ico_more.png") no-repeat;
+                    background-size:contain;
                 }
             }
         }

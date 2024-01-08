@@ -13,6 +13,41 @@
 
         <view class="list">
             <view class="hd"><text></text>拖拽可排序</view>
+            <view class="a">
+                <view 
+                    class="b"
+                    v-for="(item, index) in subjectList"
+                    :key="index"
+                >
+                    {{item.name}}
+                </view>
+            </view>
+            <!-- <view class="bd">
+                <view 
+                    class="item"
+                    :class="dragId == index ? 'active' : ''"
+                    :style="'top:' + item.y + 'px;'"
+                    v-for="(item, index) in subjectList"
+                    :key="index"
+                    :data-id="index"
+                    @touchstart="touchstart"
+                    @touchmove="touchmove"
+                    @mousedown="touchend"
+                    @touchcancel="touchend"
+                >
+                    <view class="btn"></view>
+                    <view class="name">{{item.y}} - {{item.name}}</view>
+                    <view class="switch">
+                        显示
+                        <switch 
+                            :checked="item.checked"
+                            color="#2575FF"
+                            @change.stop="change(item)"
+                        >
+                        </switch>
+                    </view>
+                </view>
+            </view> -->
             <movable-area class="bd">
                 <movable-view
                     class="item"
@@ -37,7 +72,7 @@
                         </switch>
                     </view>
                 </movable-view>
-            </movable-area>
+            </movable-area> 
         </view>
 
         <c-bottom></c-bottom>
@@ -45,6 +80,8 @@
 </template>
 
 <script>
+//https://github.com/shinewen189/nigo-vue-drag.git
+//https://github.com/yijinc/fishui
 import utils from '@/utils/utils'
 export default {
     data(){
@@ -54,30 +91,50 @@ export default {
                 {
                     name:"中级经济法",
                     checked:true,
-                    y:0, 
                 },
                 {
                     name:"中级经济法11",
                     checked:true,
-                    y:69
                 },
                 {
                     name:"中级经济法22",
                     checked:false,
-                    y:138
                 }
             ],
-            gab:69
+            gab:138
         }
     },
     onLoad(e){
         this.options = e
     },
     onShow(){
-
-        //this.subjectList[0].y = 150
+        this.initMove()
     },
     methods:{
+        initMove(){
+            let subjectList = this.subjectList
+            let arr = []
+
+            subjectList.forEach((item,index)=>{
+                let obj = item
+                obj.id = index
+                obj.y = index * this.gab
+                arr.push(obj)
+            })
+            this.subjectList = arr
+        },
+        sort(obj1, obj2){ 
+            let val1 = obj1.y
+            let val2 = obj2.y
+
+            if(val1 < val2){
+                return -1
+            }else if(val1 >= val2){
+                return 1
+            }else{
+                return 0
+            } 
+        },
         change(item){
 
         },
@@ -85,35 +142,13 @@ export default {
             this.y = e.detail.y
             this.dragId = e.target.dataset.id
         },
-        end(e){
-            //知道自己的排序
-            let subjectList = this.subjectList
-            let currentId = this.y / this.gab
-            let transferId
+        end(){
+            this.subjectList[this.dragId].y = this.y
+            this.subjectList.sort(this.compare)
 
-            if(this.dragId > currentId){
-                transferId = Math.ceil(currentId)
-            }else{
-                transferId = Math.floor(currentId)
-            }
-
-            let dragItem = subjectList.splice(this.dragId, 1)
-            subjectList.splice(transferId, 0, dragItem[0])
-
-            this.$set(subjectList[0],'y',0)
-            this.$set(subjectList[1],'y',69)
-            this.$set(subjectList[2],'y',138)/* 
-            subjectList.forEach((item,index)=>{
-                item.y = index * this.gab
-                this.$set(subjectList,index,item)
-                console.log(999,'item',item)
-            })  */
-
-            this.subjectList = subjectList
-            this.dragId = -1
-            console.log(999,'subjectList',subjectList)
-
-            //this.dragId = -1
+            setTimeout(()=>{
+                this.initMove()
+            })
         }
     }
 }

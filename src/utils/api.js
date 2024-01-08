@@ -11,7 +11,7 @@ export function getOpenidApi(callback){
             }
 
             return new Promise((resolve, reject)=>{
-                _this.$http.post(`/ai/question/user/wxLogin`,params).then((res)=>{
+                _this.$http.post(`/tiku/question/user/wxLogin`,params).then((res)=>{
                     if(res.data.code == 0){
                         let data = JSON.parse(utils.decryptByAES(res.data.encryptParam))
                         uni.setStorageSync('openid',data.openid)
@@ -30,12 +30,88 @@ export function getUserinfoApi(){
     }
 
     return new Promise((resolve, reject)=>{
-        _this.$http.post(`/ai/question/user/getUserInfo`,params).then((res)=>{
+        _this.$http.post(`/tiku/question/user/getUserInfo`,params).then((res)=>{
             if(res.data.code == 0){
                 let data = JSON.parse(utils.decryptByAES(res.data.encryptParam))
                 uni.setStorageSync('userInfo',data)
                 resolve(data)
             }
+        })
+    })
+}
+
+export function saveUserInfoApi(params){
+    params = Object.assign({}, params, {
+        openid : uni.getStorageSync('openid') || ''
+    })
+
+    return new Promise((resolve, reject)=>{
+        _this.$http.post(`/tiku/question/user/saveUserInfo`,params).then((res)=>{
+            resolve(res)
+        })
+    })
+}
+
+export function getExamListApi(params){
+    params = Object.assign({}, params)
+
+    return new Promise((resolve, reject)=>{
+        _this.$http.post(`/tiku/question/exam/getExamList`,params).then((res)=>{
+            resolve(res)
+        })
+    })
+}
+
+export function getPaperBySubjectIdApi(params){
+    params = Object.assign({}, params)
+
+    return new Promise((resolve, reject)=>{
+        _this.$http.post(`/tiku/question/paper/getBySubjectId`,params).then((res)=>{
+            resolve(res)
+        })
+    })
+}
+
+export function getQuestionByPaperIdApi(params){
+    params = Object.assign({}, params)
+
+    return new Promise((resolve, reject)=>{
+        _this.$http.post(`/tiku/question/paper/getQuestionByPaperId`,params).then((res)=>{
+            resolve(res)
+        })
+    })
+}
+
+export function startApi(params){
+    params = Object.assign({}, params, {
+        openid : uni.getStorageSync('openid') || ''
+    })
+
+    return new Promise((resolve, reject)=>{
+        _this.$http.post(`/tiku/question/practice/start`,params).then((res)=>{
+            resolve(res)
+        })
+    })
+}
+
+export function endApi(params){
+    params = Object.assign({}, params, {
+        openid : uni.getStorageSync('openid') || ''
+    })
+
+    return new Promise((resolve, reject)=>{
+        _this.$http.post(`/tiku/question/practice/end`,params).then((res)=>{
+            resolve(res)
+        })
+    })
+}
+
+export function analysisApi(params){
+    params = Object.assign({}, params)
+
+    return new Promise((resolve, reject)=>{
+        _this.$http.post(`/tiku/question/practice/analysis`,params).then((res)=>{
+            resolve(res)
         })
     })
 }

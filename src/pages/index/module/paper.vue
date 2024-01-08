@@ -68,11 +68,13 @@ export default {
             tabList:[
                 {
                     type:'linianzhenti',
-                    name:'历年真题'
+                    name:'历年真题',
+                    type:1
                 },
                 {
                     type:'monikaoshi',
-                    name:'模拟考试'
+                    name:'模拟考试',
+                    type:2
                 }
             ],
             tabIndex:0,
@@ -98,8 +100,10 @@ export default {
             })
         },
         goMore(){
+            //1历年真题 2模拟考试
+            let type = this.tabList[this.tabIndex].type
             let params = {
-                paperType:this.tabIndex    
+                paperType:type  
             }
             uni.navigateTo({
                 url : `/packagePractise/pages/paperList/paperList?${this.$hq.utils.paramsStringify(params)}`

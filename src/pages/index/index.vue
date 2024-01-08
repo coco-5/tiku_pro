@@ -6,9 +6,16 @@
             <template #left>
                 <view 
                     class="exam"
-                    @click="goExam"
                 >
-                    {{examInfo.name || ''}}
+                    <picker 
+                        :range="examTitleList"
+                        :value="examIndex"
+                        @change="changeExam"
+                    >
+                        <view class="picker-text">
+                            {{examTitleList[examIndex]}}
+                        </view>
+                    </picker>
                 </view>
             </template>
         </c-navigation-bar>
@@ -46,6 +53,7 @@
 
 <script>
 import utils from '@/utils/utils'
+import { getExamListApi } from '@/utils/api'
 import chapter from './module/chapter.vue'
 import tiku from './module/tiku.vue'
 import paper from './module/paper.vue'
@@ -57,50 +65,111 @@ export default {
             examInfo:'',//用户当前选择的考试{gid,gname} 
             subjectList:[],//科目列表
             subjectIndex:0,//当前选择的科目
+            examTitleList:[],//考试选择器列表
+            examIndex:0,//考试选择器索引
         }
     },
     onLoad(e){
         this.options = e
     },
     onShow(){
-        this.matchExamInfo()
-
-        this.getSubjectList()
+        this.getExamList().then(()=>{
+            this.matchExamInfo()
+        })
     },
 	methods:{
+        getExamList(){
+            let examTitleList = []
+            let examIdList = []
+
+            return new Promise((resolve,reject)=>{
+                getExamListApi().then(res=>{
+                    if(res.data.code == 0){
+                        let data = JSON.parse(utils.decryptByAES(res.data.encryptParam)).examList
+                        data.forEach((item,index)=>{
+                            examTitleList.push(item.examTitle)
+                            examIdList.push(item.examId)
+                        })
+
+                        this.examTitleList = examTitleList
+                        this.examIdList = examIdList
+                        this.examList = data
+                        resolve()
+                    }
+                })
+            })
+        },
         matchExamInfo(){
             let examInfo = {}
 
-            /* if(this.options.examId){
-                examInfo = {
-                    id:this.options.examId,
-                    name:''
+            if(this.options.examId || uni.getStorageSync('examInfo')){
+                if(!this.options.examId){
+                    this.options.examId = uni.getStorageSync('examInfo').id
                 }
-            }else if(uni.getStorageSync('examInfo')){
-                examInfo = uni.getStorageSync('examInfo')
+                for(let i=0;i<this.examList.length;i++){
+                    if(this.examList[i].examId == this.options.examId){
+                        let data = this.examList[i]
+                        examInfo = {
+                            id:data.examId,
+                            name:data.examTitle
+                        }
+                        this.examIndex = i
+                        break
+                    }
+                }
             }else{
-                this.goExam()
-            } */
-
-            examInfo = {
-                id:5594,
-                name:'国家公务员'
+                let data = this.examList[0]
+                examInfo = {
+                    id:data.examId,
+                    name:data.examTitle
+                }
             }
-            uni.setStorageSync('examInfo',examInfo)
-
             this.examInfo = examInfo
+            uni.setStorageSync('examInfo',this.examInfo)
+            this.getSubjectList()
         },
         getSubjectList(){
-            this.subjectList = ['中经','初会','教资','高经','一造','消费设施操作员','中经','初会','教资','高经','一造','消费设施操作员']
+            let data = this.examList
+
+            for(let i=0;i<data.length;i++){
+                if(this.examInfo.id == data[i].examId){
+                    this.subjectList = data[i].subjectList
+                    break
+                }
+            }
+
+            let subject = this.subjectList[0]
+            this.setSubjectInfo(subject)
         },
         changeSubject(index){
             this.subjectIndex = index
+            let subject = this.subjectList[index]
+
+            this.setSubjectInfo(subject)
         },
-        goExam(){
-            return
-            uni.navigateTo({
-                url:'/packageExam/pages/subject/subject'
-            })
+        setSubjectInfo(data){
+            this.subjectInfo = {
+                id:data.subjectId,
+                name:data.subjectTitle
+            }
+            uni.setStorageSync('subjectInfo',this.subjectInfo)
+        },
+        changeExam(e){
+            let value = e.detail.value
+            this.examIndex = value
+
+            for(let i=0; i<this.examList.length; i++){
+                if(i == value){
+                    let data = this.examList[i]
+                    this.examInfo = {
+                        id:data.examId,
+                        name:data.examTitle
+                    }
+                    break
+                }
+            }
+            uni.setStorageSync('examInfo',this.examInfo)
+            this.getSubjectList()
         },
         moreSubject(){
             uni.navigateTo({

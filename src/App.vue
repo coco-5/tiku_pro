@@ -26,6 +26,13 @@
         },
 		globalData: {
 			test: 'Hello! I am the globalData from App.vue'
+        },
+        methods:{
+            getUserinfo(){
+                if(!uni.getStorageSync('userInfo')){
+                    getUserinfoApi()
+                }
+            }    
         }
     }
 </script>

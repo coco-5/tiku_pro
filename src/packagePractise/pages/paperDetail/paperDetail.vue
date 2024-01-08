@@ -59,20 +59,37 @@
 </template>
 
 <script>
+import utils from '@/utils/utils'
+import { getQuestionByPaperIdApi } from '@/utils/api'
 export default {
     data(){
         return {
-
+            paperDetail:{},
         }
     },
     onLoad(e){
         this.options = e
+        
     },
     onShow(){
-
+        this.getPaper()
     },
     methods:{
+        getPaper(){
+            let params = {
+                paperId:this.options.paperId
+            }
+        
+            getQuestionByPaperIdApi(params).then((res)=>{
+                if(res.data.code == 0){
+                    let data = JSON.parse(utils.decryptByAES(res.data.encryptParam)).questionGroupList
 
+                    this.paperDetail = data
+                    console.log(999,data)
+                }
+
+            })    
+        }
     }
 }
 </script>

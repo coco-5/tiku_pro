@@ -14,7 +14,7 @@
                 v-for="(item, index) in list"
                 :key="index"
             >
-                {{item}}
+                {{item.subjectTitle}}
             </view>  
         </scroll-view>
         <view 

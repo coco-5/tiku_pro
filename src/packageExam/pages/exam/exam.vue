@@ -5,6 +5,8 @@
 </template>
 
 <script>
+import utils from '@/utils/utils'
+import { getExamListApi } from '@/utils/api'
 export default {
     data(){
         return {
@@ -13,12 +15,34 @@ export default {
     },
     onLoad(e){
         this.options = e
+
+        this.getExamList()
     },
     onShow(){
 
     },
     methods:{
+        getExamList(){
+            getExamListApi().then(res=>{
+                if(res.data.code == 0){
+                    let data = JSON.parse(utils.decryptByAES(res.data.encryptParam)).examList
 
+                    console.log(999,111,data)
+                    this.examInfo = {
+                        id:data[0].examId,
+                        name:data[0].examTitle
+                    }
+                    uni.setStorageSync('examInfo',this.examInfo)
+
+                    this.goIndex()
+                }
+            })
+        },
+        goIndex(){
+            uni.redirectTo({
+                url:'/pages/index/index'
+            })
+        }
     }
 }
 </script>

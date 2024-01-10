@@ -19,17 +19,18 @@
                 v-for="(item,index) in paperList"
                 :key="index"
             >
-                <view class="name">{{item.name}}</view>
+                <view class="name">{{item.name || ''}}</view>
                 <view class="desc">
-                    <view class="done">已做:<text>53人</text></view>
+                    <view class="done">已做:<text>{{item.practicingNums || 0}}人</text></view>
                     <view class="star">
                         难度：
                         <view class="block">
-                            <text class="on"></text>
-                            <text></text>
-                            <text></text>
-                            <text></text>
-                            <text></text>
+                            <text
+                                :class="{on:indexStart < item.difficulty}"
+                                v-for="(itemStart,indexStart) in 5"
+                                :key="indexStart"
+                            >
+                            </text>
                         </view>
                     </view>
                 </view>
@@ -115,7 +116,6 @@ export default {
                 if(res.data.code == 0){
                     let data = JSON.parse(utils.decryptByAES(res.data.encryptParam)).paperDTOList
 
-                    console.log(999,'data',data)
                     this.paperList = data
                 }
             })    
@@ -143,18 +143,22 @@ export default {
             position:relative;
             margin-bottom:24rpx;
             padding:32rpx 100rpx 32rpx 32rpx;
-            height:146rpx;
             background:#FFF;
             border-radius:24rpx;
             .name {
-                height:40rpx;
+                width:85%;
+                max-height:80rpx;
                 line-height:40rpx;
                 color:#000222;
                 font-size:28rpx;
                 font-weight:500;
-                white-space:nowrap;
+                display:-webkit-box;
+                -webkit-line-clamp:2;
+                -webkit-box-orient:vertical;
+                overflow-wrap:break-word;
+                word-break:break-all;
+                white-space:normal;
                 overflow:hidden;
-                text-overflow:ellipsis;
             }
             .desc {
                 height:40rpx;
@@ -174,16 +178,17 @@ export default {
                     vertical-align:middle;
                     .block {
                         display:inline-block;
-                        vertical-align:middle;
+                        height:24rpx;
+                        vertical-align:top;
                         text {
                             display:inline-block;
-                            margin-right:4rpx;
                             width:24rpx;
                             height:24rpx;
-                            background:#EEE;
+                            background:url("https://oss-hqwx-edu24ol.hqwx.com/miniapp/socrazy/tikupro/common/ico_star1.png") no-repeat;
+                            background-size:contain;
                             vertical-align:middle;
                             &.on {
-                                background:#000;
+                                background-image:url("https://oss-hqwx-edu24ol.hqwx.com/miniapp/socrazy/tikupro/common/ico_star.png");
                             }
                         }
                     }

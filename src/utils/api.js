@@ -72,6 +72,16 @@ export function getPaperBySubjectIdApi(params){
     })
 }
 
+export function getDetailByPaperIdApi(params){
+    params = Object.assign({}, params)
+
+    return new Promise((resolve, reject)=>{
+        _this.$http.post(`/tiku/question/paper/getDetailByPaperId`,params).then((res)=>{
+            resolve(res)
+        })
+    })
+}
+
 export function getQuestionByPaperIdApi(params){
     params = Object.assign({}, params)
 

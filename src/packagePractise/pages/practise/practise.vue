@@ -35,6 +35,8 @@
 </template>
 
 <script>
+import utils from '@/utils/utils'
+import { getQuestionByPaperIdApi } from '@/utils/api'
 import PractiseFooter from '../../components/practise-footer.vue'
 import practiseSwiper from '../../components/practise-swiper.vue'
 export default {
@@ -43,13 +45,20 @@ export default {
         return {
             options:'',
             current:0,//当前做题的索引 
-            questionList:['',''],//题目列表
+            questionList:[],//题目列表
             contentStyle:'',
             ansCardList:[],
         }
     },
     onLoad(e){
+        //mode 1 历年真题 2 模拟考试
+        //type 1 练习模式 2 考试模式
+
         this.options = e
+
+        this.startTime = utils.timeStamp()
+
+
 
         this.ansCardList = [
             {
@@ -75,9 +84,27 @@ export default {
         ]
     },
     onShow(){
-
+        this.getPaper()
     },
     methods:{
+        getPaper(){
+            let params = {
+                paperId:this.options.paperId
+            }
+        
+            getQuestionByPaperIdApi(params).then((res)=>{
+                if(res.data.code == 0){
+                    let data = JSON.parse(utils.decryptByAES(res.data.encryptParam)).questionList
+
+                    data.forEach((item)=>{
+                        item.showContent = utils.replaceHTMLChar(item.content)
+                    })
+
+                    this.questionList = data
+                }
+            })  
+
+        },
         cbFooterHeight(e){
             this.footerHeight = e
             this.matchContentStyle()
@@ -87,7 +114,11 @@ export default {
             this.matchContentStyle()
         },
         matchContentStyle(){
-            let height = this.footerHeight + this.navigationHeight
+            let height = this.footerHeight + this.navigationHeight + 80
+
+            console.log(999,'footerHeight',this.footerHeight)
+            console.log(999,'navigationHeight',this.navigationHeight)
+            console.log(999,'height',height)
 
             if(height){
                 this.contentStyle = `height:calc(100vh - ${height}rpx);`
@@ -97,17 +128,11 @@ export default {
             this.current = index
         },
         submit(){
+            this.endTime = utils.timeStamp()
 
-        },
-        practise(){
-            let params = {
+            let param = {
 
             }
-            let url = `/packagePractise/pages/practise/practise?${this.$hq.utils.paramsStringify(params)}`
-
-            uni.redirectTo({
-                url
-            })
         }
     }
 }

@@ -15,24 +15,25 @@
             </view>
             <view 
                 class="list"
-                v-if="!loading && paperList[tabIndex].list.length"
+                v-if="!loading && paperList[tabIndex].length"
             >
                 <view 
                     class="item"
-                    v-for="(item,index) in paperList[tabIndex].list"
+                    v-for="(item,index) in paperList[tabIndex]"
                     :key="index"
                 >
-                    <view class="name">2023年初级会计实务真题(一)</view>
+                    <view class="name">{{item.name || ''}}</view>
                     <view class="desc">
-                        <view class="done">已做:<text>53人</text></view>
+                        <view class="done">已做:<text>{{item.practicingNums || 0}}人</text></view>
                         <view class="star">
                             难度：
                             <view class="block">
-                                <text class="on"></text>
-                                <text></text>
-                                <text></text>
-                                <text></text>
-                                <text></text>
+                                <text
+                                    :class="{on:indexStart < item.difficulty}"
+                                    v-for="(itemStart,indexStart) in 5"
+                                    :key="indexStart"
+                                >
+                                </text>
                             </view>
                         </view>
                     </view>
@@ -55,12 +56,23 @@
 </template>
 
 <script>
+import utils from '@/utils/utils'
+import { getPaperBySubjectIdApi } from '@/utils/api'
 export default {
     props:{
-
+        examInfo:{
+            type:Object
+        }
     },
     watch:{
-
+        examInfo:{
+            deep:true,
+            handler(n){
+                if(n){
+                    this.getPaper()
+                }
+            }
+        }
     },
     data(){
         return {
@@ -78,16 +90,34 @@ export default {
                 }
             ],
             tabIndex:0,
-            paperList:[{
-                list:[1,2,3]
-            },{
-                list:[1,2]
-            }]
+            paperList:[[],[]]
         }
     },
     mounted(){
     },
     methods:{
+        getPaper(){
+            if(this.paperList[this.tabIndex].length > 0){
+                return
+            }
+
+            let params = {
+                subjectId:uni.getStorageSync('subjectInfo').id,
+                type:this.tabList[this.tabIndex],
+                pageSize:3,
+                pageNum:1
+            }
+        
+            getPaperBySubjectIdApi(params).then((res)=>{
+                if(res.data.code == 0){
+                    let data = JSON.parse(utils.decryptByAES(res.data.encryptParam)).paperDTOList
+
+                    console.log(999,'data',data)
+                    this.$set(this.paperList,this.tabIndex,data)
+                }
+            })  
+
+        },
         changeTab(index){
             this.tabIndex = index
         },

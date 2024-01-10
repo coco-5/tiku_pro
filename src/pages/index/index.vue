@@ -28,7 +28,7 @@
         >
         </c-tab>
 
-        <tiku
+        <!-- <tiku
             :examInfo="examInfo"
             v-if="examInfo"
         >
@@ -38,9 +38,13 @@
             :examInfo="examInfo"
             v-if="examInfo"
         >
-        </chapter>
+        </chapter> -->
 
-        <paper></paper>
+        <paper
+            :examInfo="examInfo"
+            v-if="examInfo"
+        >
+        </paper>
 
         <c-bottom
             :current="0"
@@ -62,7 +66,7 @@ export default {
     data(){
         return{
             options:'',
-            examInfo:'',//用户当前选择的考试{gid,gname} 
+            examInfo:{},//用户当前选择的考试{gid,gname} 
             subjectList:[],//科目列表
             subjectIndex:0,//当前选择的科目
             examTitleList:[],//考试选择器列表
@@ -182,6 +186,7 @@ export default {
 
 <style lang="scss">
 .page-index{
+    min-height:100vh;
     background:#F6F6F6;
 }
 

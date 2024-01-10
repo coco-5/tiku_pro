@@ -8,46 +8,67 @@
 
         <view class="mod-detail">
             <view class="detail-container">
-                <view class="name">2023年初级会计实务真题 (一)</view>
+                <view class="name">{{paperDetail.name || ''}}</view>
                 <view class="detail">
                     <view class="item">
-                        <view class="num"><text>100</text>分</view>
+                        <view class="num"><text>{{paperDetail.totalScore || 0 }}</text>分</view>
                         <view class="text">试卷总分</view>
                     </view>
                     <view class="item">
-                        <view class="num"><text>105</text>分钟</view>
+                        <view class="num"><text>{{paperDetail.answerTime}}</text>分钟</view>
                         <view class="text">考试用时</view>
                     </view>
                 </view>
                 <view class="list">
-                    <view class="item">年份: 2023</view>
-                    <view class="item">类型: 历年真题</view>
+                    <view class="item">年份: {{paperDetail.year}}</view>
+                    <view class="item">类型: {{paperDetail.type == 1 ? '历年真题' : '模拟考试'}}</view>
                 </view>
                 <view class="list">
-                    <view class="item">做过: 53次</view>
+                    <view class="item">做过: {{paperDetail.practicingNums}}次</view>
                     <view class="item">难度：
                         <view class="star">
-                            <text class="on"></text>
-                            <text></text>
-                            <text></text>
-                            <text></text>
-                            <text></text>
+                            <view class="block">
+                                <text
+                                    :class="{on:indexStart < paperDetail.difficulty}"
+                                    v-for="(itemStart,indexStart) in 5"
+                                    :key="indexStart"
+                                >
+                                </text>
+                            </view>
                         </view>
                     </view>
                 </view>
                 <view class="actions">
-                    <view class="btn">练习模式</view>
-                    <view class="btn blue">考试模式</view>
+                    <view 
+                        class="btn"
+                        @click="goPractise(1)"
+                    >
+                        练习模式
+                    </view>
+                    <view 
+                        class="btn blue"
+                        @click="goPractise(2)"
+                    >
+                        考试模式
+                    </view>
                 </view>
             </view>
         </view>
 
         <view class="mod-desc">
             <view class="title">题型介绍</view>
-            <view class="item">
-                <view class="hd">单选题</view>
-                <view class="bd">共20道题，每道题2.0分。</view>
-            </view>
+            <template
+                v-if="paperDetail.questionGroupList.length > 0"
+            >
+                <view 
+                    class="item"
+                    v-for="(item,index) in paperDetail.questionGroupList"
+                    :key="index"
+                >
+                    <view class="hd">{{item.name}}</view>
+                    <view class="bd">{{item.description}}</view>
+                </view>
+            </template>
             <view class="item">
                 <view class="hd">试卷说明</view>
                 <view class="bd">2023年初级会计实务真题（一）</view>
@@ -60,7 +81,7 @@
 
 <script>
 import utils from '@/utils/utils'
-import { getQuestionByPaperIdApi } from '@/utils/api'
+import { getDetailByPaperIdApi } from '@/utils/api'
 export default {
     data(){
         return {
@@ -72,23 +93,33 @@ export default {
         
     },
     onShow(){
-        this.getPaper()
+        this.getDetail()
     },
     methods:{
-        getPaper(){
+        getDetail(){
             let params = {
                 paperId:this.options.paperId
             }
         
-            getQuestionByPaperIdApi(params).then((res)=>{
+            getDetailByPaperIdApi(params).then((res)=>{
                 if(res.data.code == 0){
-                    let data = JSON.parse(utils.decryptByAES(res.data.encryptParam)).questionGroupList
+                    let data = JSON.parse(utils.decryptByAES(res.data.encryptParam))
 
                     this.paperDetail = data
-                    console.log(999,data)
                 }
-
             })    
+        },
+        goPractise(type){
+            //mode 1 历年真题 2 模拟考试
+            //type 1 练习模式 2 考试模式
+            let params = {
+                paperId:this.options.paperId,
+                type
+            }
+            let url = `/packagePractise/pages/practise/practise?${this.$hq.utils.paramsStringify(params)}`
+            uni.navigateTo({
+                url : url
+            })
         }
     }
 }
@@ -161,15 +192,20 @@ export default {
                 .star {
                     display:inline-block;
                     vertical-align:middle;
-                    text {
+                    .block {
                         display:inline-block;
-                        margin-right:4rpx;
-                        width:24rpx;
                         height:24rpx;
-                        background:#EEE;
                         vertical-align:top;
-                        &.on {
-                            background:#000;
+                        text {
+                            display:inline-block;
+                            width:24rpx;
+                            height:24rpx;
+                            background:url("https://oss-hqwx-edu24ol.hqwx.com/miniapp/socrazy/tikupro/common/ico_star1.png") no-repeat;
+                            background-size:contain;
+                            vertical-align:top;
+                            &.on {
+                                background-image:url("https://oss-hqwx-edu24ol.hqwx.com/miniapp/socrazy/tikupro/common/ico_star.png");
+                            }
                         }
                     }
                 }
@@ -186,7 +222,7 @@ export default {
                 border:2rpx solid #2575FF;
                 border-radius:40rpx;
                 color:#2575FF;
-                font-size:24rpx;
+                font-size:30rpx;
                 text-align:center;
                 &.blue {
                     margin-left:24rpx;

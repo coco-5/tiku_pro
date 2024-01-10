@@ -10,49 +10,67 @@
             v-for="(item,index) in list" 
             :key="index"
         >
-            <view class="q-top">
-                <view class="q-type">单选题</view>
-                <view class="process"><text>{{index+1}}</text>/{{list.length}}</view>
-            </view>
+            <view class="swiper-page">
+                <view class="q-top">
+                    <view class="q-type">{{questionType[item.quType]}}</view>
+                    <view class="process"><text>{{index+1}}</text>/{{list.length}}</view>
+                </view>
 
-            <view class="title">
-                <rich-text nodes="考试分中学(含中等职业学校)、小学和幼儿园3个级别（   ）"></rich-text>
-            </view>
+                <view class="title">
+                    <rich-text :nodes="item.showContent"></rich-text>
+                </view>
 
-            <view class="list-options">
-                <view class="item">
-                    <view class="label checked">A</view>
-                    <view class="text">
-                        <rich-text nodes="1111"></rich-text>
+                <template v-if="item.quType <= 3">
+                    <view class="list-options">
+                        <view 
+                            class="item"
+                            v-for="(item,index) in item.options"
+                            :key="index"
+                        >
+                            <view class="label checked">A</view>
+                            <view class="text">
+                                <rich-text nodes="1111"></rich-text>
+                            </view>
+                        </view>
+                        <view class="item">
+                            <view class="label right">B</view>
+                            <view class="text">
+                                <rich-text nodes="多孔菌科大将风度空间的反馈大家发空间的开发 打客服健康的减肥开始打开进风口的减肥"></rich-text>
+                            </view>
+                        </view>
+                        <view class="item">
+                            <view class="label error">C</view>
+                            <view class="text">
+                                <rich-text nodes="多孔菌科大将风度空间的反馈大家发空间的开发 打客服健康的减肥开始打开进风口的减肥"></rich-text>
+                            </view>
+                        </view>
+                    </view>
+                </template>
+
+                <template v-else-if="item.quType == 4">
+                    简答题
+                </template>
+
+                <view 
+                    class="mod-answer"
+                    v-if="options.type == 2"
+                >
+                    <view class="hd">答案解析</view>
+                    <view class="bd">
+                        <view class="a">正确答案：B</view>
+                        <view class="b">你的答案：D</view>
+                        <view class="c">回答错误</view>
                     </view>
                 </view>
-                <view class="item">
-                    <view class="label right">B</view>
-                    <view class="text">
-                        <rich-text nodes="多孔菌科大将风度空间的反馈大家发空间的开发 打客服健康的减肥开始打开进风口的减肥"></rich-text>
-                    </view>
-                </view>
-                <view class="item">
-                    <view class="label error">C</view>
-                    <view class="text">
-                        <rich-text nodes="多孔菌科大将风度空间的反馈大家发空间的开发 打客服健康的减肥开始打开进风口的减肥"></rich-text>
-                    </view>
-                </view>
-            </view>
 
-            <view class="mod-answer">
-                <view class="hd">答案解析</view>
-                <view class="bd">
-                    <view class="a">正确答案：B</view>
-                    <view class="b">你的答案：D</view>
-                    <view class="c">回答错误</view>
-                </view>
-            </view>
-
-            <view class="mod-analysis">
-                <view class="hd">题目解析</view>
-                <view class="bd">
-                    <rich-text nodes="12121"></rich-text>
+                <view 
+                    class="mod-analysis"
+                    v-if="options.type == 2"
+                >
+                    <view class="hd">题目解析</view>
+                    <view class="bd">
+                        <rich-text nodes="12121"></rich-text>
+                    </view>
                 </view>
             </view>
         </swiper-item>
@@ -63,8 +81,12 @@
 // type 1做题 2解析 3查看，没有解析
 // mode 1题海 2章节 3历年真题 4模拟考试
 // state 1练习 2考试
+import utils from '@/utils/utils'
 export default {
     props:{
+        options:{
+            type:Object
+        },
         list:{
             type:Array,
             default:[]
@@ -77,7 +99,9 @@ export default {
     watch:{
         list:{
             deep:true,
-            handler(n){}
+            handler(n){
+                
+            }
         },
         current:{
             deep:true,
@@ -90,14 +114,11 @@ export default {
             swiperList:[],
             subCurrent:0,//小题索引
             questionType:{
-                "0": "单选题",
-                "1": "多选题",
-                "2": "不定项",
-                "3": "判断题",
-                "4": "填空题",
-                "5": "简答题",
-                "6": "案例题",
-                "7": "论述题",
+                "1": "判断题",
+                "2": "单选题",
+                "3": "多选题",
+                "4": "简答题",
+                "5": "案例题"
             },
             customThemeStyle:{
                 '--process-color':'#366DE8',   //做题进度字体颜色
@@ -122,6 +143,11 @@ export default {
 .swiper {
     height:100%;
     background:#FFF;
+}
+
+.swiper-page {
+    height:100%;
+    overflow:auto;
 }
 .q-top {
     position:relative;
@@ -153,7 +179,6 @@ export default {
         }
     }
 }
-
 .title {
     padding:0 32rpx;
     line-height:40rpx;

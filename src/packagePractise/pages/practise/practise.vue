@@ -98,9 +98,19 @@ export default {
 
                     data.forEach((item)=>{
                         item.showContent = utils.replaceHTMLChar(item.content)
+                        if(item.quType != 4){
+                            item.questionDetailList.length > 0 && item.questionDetailList.forEach((itemDetail)=>{
+                                itemDetail.showContent = utils.replaceHTMLChar(itemDetail.content) 
+                                
+                                itemDetail.answerList.length > 0 && itemDetail.answerList.forEach((itemAnswer)=>{
+                                    itemAnswer.showContent = utils.replaceHTMLChar(itemAnswer.content) 
+                                }) 
+                            })
+                        }
                     })
 
                     this.questionList = data
+                    console.log(999,'questionList',this.questionList)
                 }
             })  
 
@@ -115,10 +125,6 @@ export default {
         },
         matchContentStyle(){
             let height = this.footerHeight + this.navigationHeight + 80
-
-            console.log(999,'footerHeight',this.footerHeight)
-            console.log(999,'navigationHeight',this.navigationHeight)
-            console.log(999,'height',height)
 
             if(height){
                 this.contentStyle = `height:calc(100vh - ${height}rpx);`

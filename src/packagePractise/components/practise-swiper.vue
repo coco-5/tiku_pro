@@ -10,7 +10,10 @@
             v-for="(item,index) in list" 
             :key="index"
         >
-            <view class="swiper-page">
+            <view 
+                class="swiper-page"
+                :class="(item.quType == 5 ? 'swiper-anli' : '') + (isShowQuestion ? '' : ' hide-question')"
+            >
                 <view class="q-top">
                     <view class="q-type">{{questionType[item.quType]}}</view>
                     <view class="process"><text>{{index+1}}</text>/{{list.length}}</view>
@@ -20,36 +23,78 @@
                     <rich-text :nodes="item.showContent"></rich-text>
                 </view>
 
-                <template v-if="item.quType <= 3">
-                    <view class="list-options">
-                        <view 
-                            class="item"
-                            v-for="(item,index) in item.options"
-                            :key="index"
-                        >
-                            <view class="label checked">A</view>
-                            <view class="text">
-                                <rich-text nodes="1111"></rich-text>
-                            </view>
-                        </view>
-                        <view class="item">
-                            <view class="label right">B</view>
-                            <view class="text">
-                                <rich-text nodes="多孔菌科大将风度空间的反馈大家发空间的开发 打客服健康的减肥开始打开进风口的减肥"></rich-text>
-                            </view>
-                        </view>
-                        <view class="item">
-                            <view class="label error">C</view>
-                            <view class="text">
-                                <rich-text nodes="多孔菌科大将风度空间的反馈大家发空间的开发 打客服健康的减肥开始打开进风口的减肥"></rich-text>
-                            </view>
-                        </view>
+                <view 
+                    class="question-hd"
+                    v-if="item.quType == 5"
+                >
+                    <view 
+                        class="bar" 
+                        @click="controlHeadBar">
                     </view>
-                </template>
+                    <view class="nav">
+                        <scroll-view 
+                            class="nav-scroll"
+                            scroll-x
+                        >
+                            <view 
+                                class="item"
+                                :class="subCurrent == indexDetail ? 'on' : ''"
+                                @click="changeSub(indexDetail)"
+                                v-for="(itemDetail,indexDetail) in item.questionDetailList"
+                                :key="indexDetail"
+                            >
+                                {{indexDetail+1}}-{{index+1}}
+                            </view>
+                        </scroll-view>
+                    </view>
+                </view>
 
-                <template v-else-if="item.quType == 4">
-                    简答题
-                </template>
+                <view class="question-bd">
+                    <view 
+                        class="bd-item"
+                        v-show="subCurrent == indexDetail"
+                        v-for="(itemDetail,indexDetail) in item.questionDetailList"
+                        :key="indexDetail"
+                    >
+                        <rich-text 
+                            class="item-title" 
+                            :nodes="itemDetail.showContent"
+                            v-if="item.quType == 5"
+                        >
+                        </rich-text>
+
+                        <template v-if="item.quType == 4">
+                            <view class="textarea">
+                                <textarea 
+                                    maxlength="500" 
+                                    :disabled="options.type != 1" 
+                                    @input="input($event,subItem, 0)" 
+                                    placeholder="输入你的答案..." 
+                                    placeholder-style="color:#999"
+                                ></textarea>
+                                <text>注：本试题为主观题，请参考解析自行评分</text>
+                            </view>
+                        </template>
+
+                        <template v-else>
+                            <view class="list-options">
+                                <view 
+                                    class="item"
+                                    :class="item.quType == 2 ? '' : 'option-multiple'"
+                                    @click="chooseoOption(item,index,itemAnswer,indexAnswer)"
+                                    v-for="(itemAnswer,indexAnswer) in itemDetail.answerList"
+                                    :key="indexAnswer"
+                                >
+                                    <view class="label">{{itemAnswer.seq}}</view>
+                                    <view class="text">
+                                        <rich-text :nodes="itemAnswer.showContent"></rich-text>
+                                    </view>
+                                </view>
+                            </view>
+                        </template>
+                            
+                    </view>
+                </view>
 
                 <view 
                     class="mod-answer"
@@ -126,7 +171,8 @@ export default {
                 '--option-checked-background':'#366DE8', //答题时，选择选项背景色
                 '--option-right-background':'#4BCD8A',   //解析时，正确答案选项背景色
                 '--option-error-background':'#EB5B5A',   //解析时，打错选项背景色
-            }
+            },
+            isShowQuestion:true
         }
     },
     created(){
@@ -134,6 +180,63 @@ export default {
     methods:{
         changeSwiper(e){
             this.$emit('change',e.detail.current)
+        },
+        changeSub(index){
+            this.subCurrent = index
+        },
+        // 问答/简答
+        input(e,item,index){
+            if(this.timer){
+                clearTimeout(this.timer)
+                this.timer = null
+            }
+            this.timer = setTimeout(()=>{
+                console.log(999,111,e.detail.value)
+            },300)
+        },
+        // 选择答案
+        chooseoOption(item,subItem,v){
+            if(this.type != 1) return 
+            let answerItem = this.answerDataObj[subItem['id']] || {
+                question_id  : subItem['q_id'],
+                topic_id     : subItem['id'],
+                answer       : [],
+                optionAnswer : subItem['answer_option']
+            }
+            let ansIndex = answerItem.answer.indexOf(v.seq)
+
+            // 单选或者判断题
+            if(subItem.qtype == 0 || subItem.qtype == 3){
+                answerItem.answer = ansIndex > -1 ? [] : [v.seq]
+                if(ansIndex > -1){
+                    // 取消选择
+                    delete this.answerDataObj[subItem.id]
+                }else{
+                    this.$set(this.answerDataObj,subItem.id,answerItem)
+                }
+                // 下一题
+                if(answerItem.answer.length > 0){
+                    this.next()
+                }
+            }else{
+                if(ansIndex > -1){
+                    // 取消选择
+                    answerItem.answer.splice(ansIndex,1)
+                }else{
+                    answerItem.answer.push(v.seq)
+                }
+                if(answerItem.answer.length == 0){
+                    delete this.answerDataObj[subItem.id]
+                }else{
+                    this.$set(this.answerDataObj,subItem.id,answerItem)
+                }
+            }
+            this.$emit('answer',this.answerDataObj)
+        },
+        controlHeadBar(){
+            this.isShowQuestion = !this.isShowQuestion
+
+            
         }
     }
 }
@@ -146,8 +249,32 @@ export default {
 }
 
 .swiper-page {
+    position:relative;
     height:100%;
     overflow:auto;
+    &.swiper-anli {
+        .title {
+            max-height:50%;
+            overflow-y:auto;
+        }
+        .bd-item {
+            margin-top:24rpx;
+        }
+    }
+    &.hide-question {
+        .title {
+            max-height:80%;
+        }
+        .question-hd {
+            position:absolute;
+            bottom:0;
+            left:0;
+            width:100%;
+        }
+        .question-bd {
+            display:none;
+        }
+    }
 }
 .q-top {
     position:relative;
@@ -180,15 +307,58 @@ export default {
     }
 }
 .title {
-    padding:0 32rpx;
+    padding:32rpx;
     line-height:40rpx;
     color:#000222;
     font-size:30rpx;
 }
 
+.question-hd {
+    position:relative;
+    height:100rpx;
+    .bar {
+        position:absolute;
+        top:-58rpx;
+        left:50%;
+        transform:translateX(-50%);
+        width:100%;
+        height:100rpx;
+        background:url(https://oss-hqwx-edu24ol.hqwx.com/miniapp/hq_training/common/headTop.png) no-repeat top center;
+        background-size:cover;
+    }
+    .nav {
+        position:relative;
+        z-index:1;
+        padding:24rpx 32rpx;
+        border-bottom:1px solid #EEE;
+        .nav-scroll {
+            white-space:nowrap;
+        }
+        .item {
+            display:inline-block;
+            margin-right:32rpx;
+            color:#b3b8c7;
+            vertical-align:middle;
+            &.on {
+                color:var(--multi-tab-active-color);
+            }
+            &:last-child {
+                margin-right:0;
+            }
+        }
+    }
+}
+
+.question-bd {
+    padding:0 32rpx;
+    .item-bd {
+
+    }
+}
+
 .list-options {
-    padding:48rpx 32rpx 0;
-    border-bottom:16rpx solid #F6F6F6;
+    padding:48rpx 0 0;
+    //border-bottom:16rpx solid #F6F6F6;
     .item {
         position:relative;
         margin-bottom:40rpx;
@@ -197,6 +367,11 @@ export default {
         line-height:72rpx;
         color:#000222;
         font-size:28rpx;
+        &.option-multiple {
+            .label {
+                border-radius:18rpx;
+            }
+        }
         .label {
             position:absolute;
             top:50%;
@@ -226,6 +401,17 @@ export default {
             line-height:36rpx;
             vertical-align:middle;
         }
+    }
+}
+
+.textarea {
+    padding:40rpx 32rpx;
+    textarea {
+        box-sizing:border-box;
+        padding:16rpx;
+        width:100%;
+        background:#F0F0F0;
+        border:1px solid #EEE;
     }
 }
 

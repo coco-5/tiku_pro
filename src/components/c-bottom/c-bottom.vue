@@ -100,7 +100,7 @@ export default {
             background-repeat:no-repeat;
             background-size:contain;
             &.home {
-                background-image:url("https://oss-hqwx-edu24ol.hqwx.com/miniapp/socrazy/tikupro/bottom/ico_home.png");
+                background-image:url("https://oss-hqwx-edu24ol.hqwx.com/miniapp/socrazy/tikupro/bottom/ico_home1.png");
             }
             &.user {
                 background-image:url("https://oss-hqwx-edu24ol.hqwx.com/miniapp/socrazy/tikupro/bottom/ico_user1.png");
@@ -112,7 +112,7 @@ export default {
                 background-image:url("https://oss-hqwx-edu24ol.hqwx.com/miniapp/socrazy/tikupro/bottom/ico_home.png");
             }
             .user {
-                background-image:url("https://oss-hqwx-edu24ol.hqwx.com/miniapp/socrazy/tikupro/bottom/ico_user1.png");
+                background-image:url("https://oss-hqwx-edu24ol.hqwx.com/miniapp/socrazy/tikupro/bottom/ico_user.png");
             }
         }
     }

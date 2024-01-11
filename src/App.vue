@@ -11,10 +11,13 @@
         onLaunch: function() {
             //获取用户openid和用户信息
             if(!uni.getStorageSync('openid')){
+                console.log(999,111)
                 getOpenidApi(()=>{
+                    console.log(999,222)
                     this.getUserinfo()
                 })
             }else{
+                console.log(999,333)
                 this.getUserinfo()    
             }
         },
@@ -29,7 +32,9 @@
         },
         methods:{
             getUserinfo(){
+                console.log(999,444)
                 if(!uni.getStorageSync('userInfo')){
+                    console.log(999,555)
                     getUserinfoApi()
                 }
             }    

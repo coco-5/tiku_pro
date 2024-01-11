@@ -127,6 +127,9 @@ export default {
             uni.navigateTo({
                 url : `/packagePractise/pages/paperDetail/paperDetail?${this.$hq.utils.paramsStringify(params)}`
             })
+        },
+        changeSubject(){
+            console.log(999,)   
         }
     }
 }

@@ -119,9 +119,10 @@ export default {
                 top:50%;
                 right:0;
                 transform:translateY(-50%);
-                width:16rpx;
-                height:16rpx;
-                background:#000;
+                width:12rpx;
+                height:20rpx;
+                background:url("https://oss-hqwx-edu24ol.hqwx.com/miniapp/socrazy/tikupro/common/ico_arrow.png") no-repeat;
+                background-size:contain;
             }
         }
     }
@@ -143,16 +144,18 @@ export default {
             top:50%;
             right:32rpx;
             transform:translateY(-50%);
-            width:24rpx;
-            height:24rpx;
-            background:#000;
+            width:12rpx;
+            height:20rpx;
+            background:url("https://oss-hqwx-edu24ol.hqwx.com/miniapp/socrazy/tikupro/common/ico_arrow.png") no-repeat;
+            background-size:contain;
         }
         .icon {
             display:inline-block;
             margin-right:8rpx;
-            width:38rpx;
-            height:38rpx;
-            background:#000;
+            width:48rpx;
+            height:48rpx;
+            background:url("https://oss-hqwx-edu24ol.hqwx.com/miniapp/socrazy/tikupro/common/ico_book.png") no-repeat;
+            background-size:contain;
             vertical-align:middle;
         }
         .name {
@@ -165,6 +168,9 @@ export default {
     button.item {
         border:1px solid #FFF;
         text-align:left;
+        .icon {
+            background-image:url("https://oss-hqwx-edu24ol.hqwx.com/miniapp/socrazy/tikupro/common/ico_book1.png");
+        }
     }
 }
 </style>

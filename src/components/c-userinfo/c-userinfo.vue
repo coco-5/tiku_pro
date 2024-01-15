@@ -57,7 +57,7 @@
                                 <button 
                                     class="btn" 
                                     form-type="submit"
-                                    :class="(avatar && name) ? '' : 'disabled'"
+                                    :class="(avatar || name) ? '' : 'disabled'"
                                 >
                                     保存
                                 </button>
@@ -72,6 +72,7 @@
 
 <script>
 import utils from '@/utils/utils'
+import { saveUserInfoApi } from '@/utils/api'
 export default {
     props:{
         isShowInfo:{
@@ -131,7 +132,8 @@ export default {
             uni.showLoading()
 
 			uni.uploadFile({
-				url:`http://www.river0413.top/question/user/uploadAvatar`,
+				//url:`http://www.river0413.top/question/user/uploadAvatar`,
+				url:`http://117.50.176.30:8181/question/user/uploadAvatar`,
                 name:'avatar',
                 filePath:filePath,
                 success:(res)=>{
@@ -141,6 +143,8 @@ export default {
                         if(json.code == 0){
                             let data = JSON.parse(utils.decryptByAES(json.encryptParam))
                             this.avatar = data.avatarUrl
+
+                            console.log(9999,'data',data)
                         }
                     }
                 },

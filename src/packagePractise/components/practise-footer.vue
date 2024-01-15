@@ -32,7 +32,7 @@
                     </view>
                     <view 
                         class="item" 
-                        @click="$emit('submit')" 
+                        @click="submit" 
                     >
                         <image src="https://oss-hqwx-edu24ol.hqwx.com/miniapp/tushu_hqwx/icon-ans-submit.png" />
                         <view>提交试卷</view>
@@ -198,6 +198,9 @@ export default {
         },
         goPractise(){
             this.$emit('practise')
+        },
+        submit(){
+            this.$emit('submit')
         }
     }
 }

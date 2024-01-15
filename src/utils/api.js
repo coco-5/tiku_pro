@@ -109,6 +109,8 @@ export function endApi(params){
         openid : uni.getStorageSync('openid') || ''
     })
 
+    console.log(9999,'endApi',params)
+
     return new Promise((resolve, reject)=>{
         _this.$http.post(`/tiku/question/practice/end`,params).then((res)=>{
             resolve(res)

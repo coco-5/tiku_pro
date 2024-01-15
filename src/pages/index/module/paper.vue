@@ -122,8 +122,10 @@ export default {
             this.tabIndex = index
         },
         goDetail(item){
+            let mode = this.tabList[this.tabIndex].type == 1 ? 3 : 4
             let params = {
-                paperId:item.id
+                paperId:item.id,
+                mode
             }
             uni.navigateTo({
                 url : `/packagePractise/pages/paperDetail/paperDetail?${this.$hq.utils.paramsStringify(params)}`

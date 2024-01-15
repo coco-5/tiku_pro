@@ -110,13 +110,14 @@ export default {
             })    
         },
         goPractise(state){
-            //mode 1 历年真题 2 模拟考试
+            //mode 3 历年真题 4 模拟考试
             //type 1 做题
             //state 1 练习模式 2 考试模式
             let params = {
                 paperId:this.options.paperId,
                 type:1,
                 state,
+                mode : this.options.mode
             }
             let url = `/packagePractise/pages/practise/practise?${this.$hq.utils.paramsStringify(params)}`
             uni.navigateTo({

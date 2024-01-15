@@ -42,7 +42,7 @@
                                     class="back"
                                     @click="handlerGoBack"
                                 >
-                                    <image src="https://oss-hqwx-edu24ol.hqwx.com/miniapp/socrazy/tikupro/common/ico_back.png" />
+                                    <image src="https://oss-hqwx-edu24ol.hqwx.com/miniapp/socrazy/tikupro/common/ico_back1.png" />
                                 </view>
                                 <view 
                                     class="home"

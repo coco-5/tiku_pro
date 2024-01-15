@@ -15,6 +15,8 @@
                 :options="options"
                 :list="questionList"
                 :current="current"
+                :answerDataObj="answerDataObj"
+                @answer="answer"
                 @change="change"
             >
             </practise-swiper>
@@ -36,7 +38,7 @@
 
 <script>
 import utils from '@/utils/utils'
-import { getQuestionByPaperIdApi } from '@/utils/api'
+import { getQuestionByPaperIdApi, startApi, endApi } from '@/utils/api'
 import PractiseFooter from '../../components/practise-footer.vue'
 import practiseSwiper from '../../components/practise-swiper.vue'
 export default {
@@ -47,12 +49,13 @@ export default {
             current:0,//当前做题的索引 
             questionList:[],//题目列表
             contentStyle:'',
+            answerDataObj:{},//答题数据
             ansCardList:[],
         }
     },
     onLoad(e){
         //mode 1 历年真题 2 模拟考试
-        //type 1 练习模式 2 考试模式
+        //state 1 练习模式 2 考试模式
 
         this.options = e
 
@@ -84,9 +87,20 @@ export default {
         ]
     },
     onShow(){
+        this.startPaper()
         this.getPaper()
     },
     methods:{
+        startPaper(){
+            let params = {
+                paperId:this.options.paperId,
+                type:this.options.state 
+            }
+
+            startApi(params).then((res)=>{
+
+            })
+        },
         getPaper(){
             let params = {
                 paperId:this.options.paperId
@@ -95,22 +109,30 @@ export default {
             getQuestionByPaperIdApi(params).then((res)=>{
                 if(res.data.code == 0){
                     let data = JSON.parse(utils.decryptByAES(res.data.encryptParam)).questionList
+                    let answerDataObj = {}
 
-                    data.forEach((item)=>{
+                    data.forEach((item,index)=>{
                         item.showContent = utils.replaceHTMLChar(item.content)
                         if(item.quType != 4){
-                            item.questionDetailList.length > 0 && item.questionDetailList.forEach((itemDetail)=>{
+                            item.questionDetailList && item.questionDetailList.length > 0 && item.questionDetailList.forEach((itemDetail,indexDetail)=>{
                                 itemDetail.showContent = utils.replaceHTMLChar(itemDetail.content) 
-                                
+
                                 itemDetail.answerList.length > 0 && itemDetail.answerList.forEach((itemAnswer)=>{
                                     itemAnswer.showContent = utils.replaceHTMLChar(itemAnswer.content) 
-                                }) 
+                                })
+                                
+                                answerDataObj[itemDetail.id] = {
+                                    questionId:itemDetail.id,
+                                    seq:[],//选项
+                                    answer:''//简答
+                                } 
                             })
                         }
                     })
 
                     this.questionList = data
-                    console.log(999,'questionList',this.questionList)
+                    console.log(9999,'questionList',this.questionList)
+                    this.answerDataObj = answerDataObj 
                 }
             })  
 
@@ -133,12 +155,48 @@ export default {
         change(index){
             this.current = index
         },
+        answer(answerDataObj){
+            this.answerDataObj = answerDataObj
+        },
         submit(){
-            this.endTime = utils.timeStamp()
+            let answerList = []
+            let answerDataObj = this.answerDataObj || {}
+
+			for(let k in answerDataObj){
+                answerList.push(answerDataObj[k])
+            }
+
+            console.log(999,'answerList',answerList    )
 
             let param = {
-
+                startTime : this.startTime,
+                endTime : utils.timeStamp(),
+                answerList : answerList,
+                type : this.options.state,
+                saveFlag : 2//1暂存2提交成绩
             }
+
+            if(this.options.state == 1){
+                param.practiceId = this.options.practiceId
+            }else if(this.options.state == 2){
+                param.paperId = this.options.paperId
+            }
+
+            console.log(999,'param',param)
+
+            endApi(param).then((res)=>{
+
+            })
+        },
+        goReport(){
+            let params = {
+                paperId:this.options.paperId,
+                mode:this.options.mode
+            }
+
+            uni.redirectTo({
+                url : `/packagePractise/pages/report/report?${this.$hq.utils.paramsStringify(params)}`
+            })
         }
     }
 }

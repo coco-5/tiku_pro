@@ -1,7 +1,7 @@
 <template>
     <view class="page-report">
         <c-navigation-bar
-            style="background:#0086FF;"
+            style="background:transparent;"
             backType="2"
         >
         </c-navigation-bar>
@@ -70,9 +70,24 @@
         >
             <template #content>
                 <view class="btns">
-                    <view class="btn">返回列表</view>
-                    <view class="btn1">错题解析</view>
-                    <view class="btn2">全部解析</view>
+                    <view 
+                        class="btn"
+                        @click="goList"
+                    >
+                        返回列表
+                    </view>
+                    <view 
+                        class="btn1"
+                        @click="goAnalysis(0)"
+                    >
+                        错题解析
+                    </view>
+                    <view 
+                        class="btn2"
+                        @click="goAnalysis(1)"
+                    >
+                        全部解析
+                    </view>
                 </view>
             </template>
         </c-bottom>
@@ -95,7 +110,36 @@ export default {
 
     },
     methods:{
+        goList(){
+            let path = ``
+            let params = {
+                mode:this.options.mode
+            }
 
+            if(this.options.mode == 3){
+                path = `/packagePractise/pages/paperList/paperList?`
+            }
+
+            path += this.$hq.utils.paramsStringify(params)
+
+            uni.navigateTo({
+                url:path
+            })
+        },
+        goAnalysis(type){
+            let path = ``
+            let params = {
+                paperId:this.options.paperId,
+                mode:this.options.mode,
+                type:2
+            }
+
+            path = `/packagePractise/pages/practise/practise?${this.$hq.utils.paramsStringify(params)}`
+
+            uni.navigateTo({
+                url:path
+            })
+        }
     }
 }
 </script>
@@ -103,13 +147,15 @@ export default {
 <style lang="scss" scoped>
 .page-report {
     min-height:100vh;
-    background:#F6F6F6;
+    background:url("https://oss-hqwx-edu24ol.hqwx.com/miniapp/socrazy/tikupro/report/top.png") #F6F6F6 no-repeat top;
+    background-size:contain;
 }
 
 .banner {
     position:relative;
     height:380rpx;
-    background:#0086FF;
+    background:url("https://oss-hqwx-edu24ol.hqwx.com/miniapp/socrazy/tikupro/report/banner.png") no-repeat;
+    background-size:contain;
     .date {
         position:absolute;
         top:192rpx;
@@ -187,9 +233,26 @@ export default {
 }
 
 .list {
+    position:relative;
     margin:32rpx;
     background:#FFF;
     border-radius:24rpx;
+    &:before,
+    &:after {
+        content:' ';
+        position:absolute;
+        top:-48rpx;
+        width:14rpx;
+        height:64rpx;
+        background:url("https://oss-hqwx-edu24ol.hqwx.com/miniapp/socrazy/tikupro/report/line.png") no-repeat;
+        background-size:contain;
+    }
+    &:before {
+        left:40rpx;
+    }
+    &:after {
+        right:40rpx;
+    }
     .hd {
         position:relative;
         padding:32rpx;

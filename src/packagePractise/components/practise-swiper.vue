@@ -72,7 +72,7 @@
                                     placeholder="输入你的答案..." 
                                     placeholder-style="color:#999"
                                 ></textarea>
-                                <text>注：本试题为主观题，请参考解析自行评分</text>
+                                <text class="tips">注：本试题为主观题，请参考解析自行评分</text>
                             </view>
                         </template>
 
@@ -81,11 +81,18 @@
                                 <view 
                                     class="item"
                                     :class="item.quType == 2 ? '' : 'option-multiple'"
-                                    @click="chooseoOption(item,index,itemAnswer,indexAnswer)"
+                                    @click="chooseoOption(item, itemAnswer)"
                                     v-for="(itemAnswer,indexAnswer) in itemDetail.answerList"
                                     :key="indexAnswer"
                                 >
-                                    <view class="label">{{itemAnswer.seq}}</view>
+                                    <view 
+                                        class="label"
+                                        :class="{
+                                            checked:options.type == 1  && checkUserChoose(itemAnswer.questionId,itemAnswer.seq)
+                                        }"
+                                    >
+                                        {{itemAnswer.seq}}
+                                    </view>
                                     <view class="text">
                                         <rich-text :nodes="itemAnswer.showContent"></rich-text>
                                     </view>
@@ -139,6 +146,9 @@ export default {
         current:{
             type:[String,Number],
             default:0
+        },
+        answerDataObj:{
+            type:Object,
         }
     },
     watch:{
@@ -151,6 +161,14 @@ export default {
         current:{
             deep:true,
             handler(n){
+                this.isShowQuestion = true
+                this.subCurrent = 0
+            }
+        },
+        answerDataObj:{
+            deep:true,
+            handler(n){
+
             }
         }
     },
@@ -195,48 +213,65 @@ export default {
             },300)
         },
         // 选择答案
-        chooseoOption(item,subItem,v){
-            if(this.type != 1) return 
-            let answerItem = this.answerDataObj[subItem['id']] || {
-                question_id  : subItem['q_id'],
-                topic_id     : subItem['id'],
-                answer       : [],
-                optionAnswer : subItem['answer_option']
+        chooseoOption(item, itemAnswer){
+            if(this.options.type != 1) return 
+
+            let answerItem = this.answerDataObj[itemAnswer['questionId']] || {
+                questionId : itemAnswer.questionId,
+                seq : [],
+                answer : ''
             }
-            let ansIndex = answerItem.answer.indexOf(v.seq)
+            let ansIndex = answerItem.seq.indexOf(itemAnswer.seq)
 
             // 单选或者判断题
-            if(subItem.qtype == 0 || subItem.qtype == 3){
-                answerItem.answer = ansIndex > -1 ? [] : [v.seq]
+            if(item.quType == 1 || item.quType == 2){
+                answerItem.seq = ansIndex > -1 ? [] : [itemAnswer.seq]
                 if(ansIndex > -1){
                     // 取消选择
-                    delete this.answerDataObj[subItem.id]
+                    delete this.answerDataObj[itemAnswer.questionId]
                 }else{
-                    this.$set(this.answerDataObj,subItem.id,answerItem)
+                    this.$set(this.answerDataObj,itemAnswer.questionId,answerItem)
                 }
                 // 下一题
-                if(answerItem.answer.length > 0){
+                if(answerItem.seq.length > 0){
                     this.next()
                 }
             }else{
                 if(ansIndex > -1){
                     // 取消选择
-                    answerItem.answer.splice(ansIndex,1)
+                    answerItem.seq.splice(ansIndex,1)
                 }else{
-                    answerItem.answer.push(v.seq)
+                    answerItem.seq.push(itemAnswer.seq)
                 }
-                if(answerItem.answer.length == 0){
-                    delete this.answerDataObj[subItem.id]
+                if(answerItem.seq.length == 0){
+                    delete this.answerDataObj[itemAnswer.questionId]
                 }else{
-                    this.$set(this.answerDataObj,subItem.id,answerItem)
+                    this.$set(this.answerDataObj,itemAnswer.questionId,answerItem)
                 }
             }
             this.$emit('answer',this.answerDataObj)
         },
+        next(){
+            let item = this.list[this.current]
+
+            if(item.quType != 5){
+                this.$emit('change',this.current+1)
+            }
+        },
+        checkUserChoose(id,seq){
+            if(this.answerDataObj && this.answerDataObj[id] && this.answerDataObj[id].seq.indexOf(seq) > -1) return true
+            return false
+        },
+        checkUserChoose2(answer_option,seq){
+            if(answer_option.indexOf(seq) > -1) return true
+            return false
+        },
+        checkUserChoose3(id,seq,answer_option){
+            if(this.answerDataObj && this.answerDataObj[id] && this.answerDataObj[id].answer.indexOf(seq) > -1 && answer_option.indexOf(seq) == -1) return true
+            return false
+        },
         controlHeadBar(){
             this.isShowQuestion = !this.isShowQuestion
-
-            
         }
     }
 }
@@ -254,7 +289,7 @@ export default {
     overflow:auto;
     &.swiper-anli {
         .title {
-            max-height:50%;
+            height:40%;
             overflow-y:auto;
         }
         .bd-item {
@@ -263,7 +298,7 @@ export default {
     }
     &.hide-question {
         .title {
-            max-height:80%;
+            height:80%;
         }
         .question-hd {
             position:absolute;
@@ -405,13 +440,15 @@ export default {
 }
 
 .textarea {
-    padding:40rpx 32rpx;
     textarea {
         box-sizing:border-box;
         padding:16rpx;
         width:100%;
         background:#F0F0F0;
         border:1px solid #EEE;
+    }
+    .tips {
+        color:#999;
     }
 }
 

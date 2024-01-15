@@ -54,7 +54,7 @@ export default {
             this.$emit('change', index)
         },
         more(){
-            this.$emit('more')
+            //this.$emit('more')
         }
     }
 }

@@ -12,10 +12,10 @@
             @click="isShowInfo = true"
         >
             <view class="face">
-                <image src="" />
+                <image :src="userInfo.avatarUrl || 'https://oss-hqwx-edu24ol.hqwx.com/miniapp/hq_training/ai/common/user-default.png'" />
             </view>
             <view class="name">
-                123
+                {{userInfo.nickName}}
             </view>
             <view class="more">主页</view>
         </view>
@@ -23,7 +23,7 @@
         <view class="list">
             <view class="item">
                 <view class="icon"></view>
-                <view class="name">中级会计师职称</view>
+                <view class="name">{{subjectInfo.name}}</view>
             </view>
             <button 
                 class="item"
@@ -35,7 +35,9 @@
         </view>
 
         <c-userinfo
+            :userInfo="userInfo"
             :isShowInfo="isShowInfo"
+            @cbSubmit="cbSubmit"
             @cbCloseUserinfo="cbCloseUserinfo"
         >
         </c-userinfo>
@@ -49,21 +51,45 @@
 </template>
 
 <script>
+import utils from '@/utils/utils'
+import { getUserinfoApi } from '@/utils/api'
 export default {
     data(){
         return {
-            isShowInfo:false
+            userInfo:'',
+            isShowInfo:false,
+            subjectInfo:{},//科目数据
         }
     },
     onLoad(e){
         this.options = e
     },
     onShow(){
+        this.userInfo = uni.getStorageSync('userInfo')
 
+        this.subjectInfo = uni.getStorageSync('subjectInfo')
     },
     methods:{
         cbCloseUserinfo(){
             this.isShowInfo = false
+        },
+        getUserinfo(){
+            getUserinfoApi().then((data)=>{
+                this.userInfo = uni.getStorageSync('userInfo')
+            })
+        },
+        cbSubmit(){
+            this.isShowInfo = false  
+            getUserinfoApi().then((data)=>{
+                this.userInfo = data
+            })
+        }
+    },
+    onShareAppMessage(e){
+        return {
+            title:'',
+            path:'/pages/index/index',
+            imageUrl:''
         }
     }
 }

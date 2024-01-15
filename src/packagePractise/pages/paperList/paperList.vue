@@ -122,7 +122,8 @@ export default {
         },
         goPractise(item){
             let params = {
-                paperId:item.id
+                paperId:item.id,
+                mode : this.options.mode
             }
             uni.navigateTo({
                 url : `/packagePractise/pages/paperDetail/paperDetail?${this.$hq.utils.paramsStringify(params)}`

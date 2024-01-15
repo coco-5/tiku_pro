@@ -32,9 +32,7 @@
         },
         methods:{
             getUserinfo(){
-                console.log(999,444)
                 if(!uni.getStorageSync('userInfo')){
-                    console.log(999,555)
                     getUserinfoApi()
                 }
             }    

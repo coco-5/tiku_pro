@@ -43,7 +43,12 @@
                 <view class="item">
                     <view class="title">单项选择题</view>
                     <view class="l">
-                        <view class="a right">1</view>
+                        <view 
+                            class="a right"
+                            @click="goAnalysis(0,index)"
+                        >
+                            1
+                        </view>
                         <view class="a error">2</view>
                         <view class="a">3</view>
                         <view class="a">4</view>
@@ -78,13 +83,13 @@
                     </view>
                     <view 
                         class="btn1"
-                        @click="goAnalysis(0)"
+                        @click="goAnalysis(1)"
                     >
                         错题解析
                     </view>
                     <view 
                         class="btn2"
-                        @click="goAnalysis(1)"
+                        @click="goAnalysis(0)"
                     >
                         全部解析
                     </view>
@@ -95,9 +100,9 @@
 </template>
 
 <script>
-import cBottom from '../../../components/c-bottom/c-bottom.vue'
+import utils from '@/utils/utils'
+import { analysisApi } from '@/utils/api'
 export default {
-  components: { cBottom },
     data(){
         return {
 
@@ -105,11 +110,25 @@ export default {
     },
     onLoad(e){
         this.options = e
+
+        this.getAnalysis()
     },
     onShow(){
 
     },
     methods:{
+        getAnalysis(){
+            let params = {
+                practiceId:this.options.practiceId,
+                wrongFlag:0
+            }
+
+            analysisApi(params).then((res)=>{
+                if(res.data.code == 0){
+                    let data = JSON.parse(utils.decryptByAES(res.data.encryptParam))
+                }
+            })
+        },
         goList(){
             let path = ``
             let params = {
@@ -126,12 +145,14 @@ export default {
                 url:path
             })
         },
-        goAnalysis(type){
+        goAnalysis(type = 0,current){
             let path = ``
             let params = {
-                paperId:this.options.paperId,
+                practiceId:this.options.practiceId,
                 mode:this.options.mode,
-                type:2
+                type:2,
+                wrongFlag:type,
+                current
             }
 
             path = `/packagePractise/pages/practise/practise?${this.$hq.utils.paramsStringify(params)}`

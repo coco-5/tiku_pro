@@ -27,7 +27,6 @@ export default {
                 if(res.data.code == 0){
                     let data = JSON.parse(utils.decryptByAES(res.data.encryptParam)).examList
 
-                    console.log(999,111,data)
                     this.examInfo = {
                         id:data[0].examId,
                         name:data[0].examTitle

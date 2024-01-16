@@ -5,6 +5,13 @@
             backType="1"
             @cbNavigationHeight="cbNavigationHeight"
         >
+            <template #content>
+                <use-time 
+                    :options="options"
+                    :time="paperDetail.answerTime"
+                >
+                </use-time>
+            </template>
         </c-navigation-bar>
 
         <view 
@@ -38,11 +45,12 @@
 
 <script>
 import utils from '@/utils/utils'
-import { getQuestionByPaperIdApi, startApi, endApi } from '@/utils/api'
+import { getDetailByPaperIdApi, getQuestionByPaperIdApi, startApi, endApi } from '@/utils/api'
 import PractiseFooter from '../../components/practise-footer.vue'
 import practiseSwiper from '../../components/practise-swiper.vue'
+import useTime from '../../components/use-time.vue'
 export default {
-  components: { practiseSwiper, PractiseFooter },
+  components: { practiseSwiper, PractiseFooter, useTime },
     data(){
         return {
             options:'',
@@ -51,44 +59,30 @@ export default {
             contentStyle:'',
             answerDataObj:{},//答题数据
             ansCardList:[],
+            useTime:'00:00:00',
+            paperDetail:''
         }
     },
     onLoad(e){
-        //mode 1 历年真题 2 模拟考试
-        //state 1 练习模式 2 考试模式
+        // type 1做题 2解析 3查看，没有解析
+        // mode 1题海 2章节 3历年真题 4模拟考试
+        // state 1练习 2考试
 
         this.options = e
 
         this.startTime = utils.timeStamp()
 
+        this.current = this.options.current || 0
 
-
-        this.ansCardList = [
-            {
-                groupName:'1111',
-                sort:[
-                    {index:1,type:0},
-                    {index:2,type:1},
-                    {index:3,type:2},
-                    {index:4,type:3},
-                    {index:5,type:0}
-                ]
-            },
-            {
-                groupName:'2222',
-                sort:[
-                    {index:1,type:0},
-                    {index:2,type:1},
-                    {index:3,type:2},
-                    {index:4,type:3},
-                    {index:5,type:0}
-                ]
-            }
-        ]
+        if(this.options.type == 1){
+            this.startPaper().then(()=>{
+                this.getList()
+            })
+        }else if(this.options.type == 2){
+            this.getList()
+        }
     },
     onShow(){
-        this.startPaper()
-        this.getPaper()
     },
     methods:{
         startPaper(){
@@ -97,8 +91,43 @@ export default {
                 type:this.options.state 
             }
 
-            startApi(params).then((res)=>{
+            return new Promise((resolve, reject)=>{
+                startApi(params).then((res)=>{
+                    if(res.data.code == 0){
+                        let data = JSON.parse(utils.decryptByAES(res.data.encryptParam))
+                        resolve()
+                    }
+                })
+            })
+        },
+        getList(){
+            let list = [
+                this.getDetail(),
+                this.getPaper()
+            ]
 
+            uni.showLoading()
+
+            Promise.all(list).then((data)=>{
+                this.initDetail(data[0])
+                this.initPaper(data[1])
+                uni.hideLoading()
+            })
+        },
+        getDetail(){
+            let params = {
+                paperId:this.options.paperId
+            }
+
+            return new Promise((resolve)=>{
+                getDetailByPaperIdApi(params).then((res)=>{
+                    if(res.data.code == 0){
+                        let data = JSON.parse(utils.decryptByAES(res.data.encryptParam))
+
+                        this.paperDetail = data
+                        resolve(data)
+                    }
+                })
             })
         },
         getPaper(){
@@ -106,36 +135,62 @@ export default {
                 paperId:this.options.paperId
             }
         
-            getQuestionByPaperIdApi(params).then((res)=>{
-                if(res.data.code == 0){
-                    let data = JSON.parse(utils.decryptByAES(res.data.encryptParam)).questionList
-                    let answerDataObj = {}
+            return new Promise((resolve)=>{
+                getQuestionByPaperIdApi(params).then((res)=>{
+                    if(res.data.code == 0){
+                        let data = JSON.parse(utils.decryptByAES(res.data.encryptParam)).questionList
+                        resolve(data)
+                    }
+                })    
+            })
+        },
+        initDetail(data){
+            let groupList = data.questionGroupList
+            let ansCardList = []
+            let count = 1
 
-                    data.forEach((item,index)=>{
-                        item.showContent = utils.replaceHTMLChar(item.content)
-                        if(item.quType != 4){
-                            item.questionDetailList && item.questionDetailList.length > 0 && item.questionDetailList.forEach((itemDetail,indexDetail)=>{
-                                itemDetail.showContent = utils.replaceHTMLChar(itemDetail.content) 
+            groupList.forEach((item)=>{
+                let list = {}
+                let sort = []
 
-                                itemDetail.answerList.length > 0 && itemDetail.answerList.forEach((itemAnswer)=>{
-                                    itemAnswer.showContent = utils.replaceHTMLChar(itemAnswer.content) 
-                                })
-                                
-                                answerDataObj[itemDetail.id] = {
-                                    questionId:itemDetail.id,
-                                    seq:[],//选项
-                                    answer:''//简答
-                                } 
-                            })
-                        }
+                list.groupName = item.name
+                item.questionIds && item.questionIds.length > 0 && item.questionIds.forEach((qItem,qIndex)=>{
+                    sort.push({
+                        index:count,
+                        id:qItem
                     })
+                    count++
+                })
+                list.sort = sort
+                ansCardList.push(list)  
+            })
 
-                    this.questionList = data
-                    console.log(9999,'questionList',this.questionList)
-                    this.answerDataObj = answerDataObj 
+            this.ansCardList = ansCardList
+        },
+        initPaper(data){
+            let answerDataObj = {}
+
+            data.forEach((item,index)=>{
+                item.showContent = utils.replaceHTMLChar(item.content)
+                if(item.quType != 4){
+                    item.questionDetailList && item.questionDetailList.length > 0 && item.questionDetailList.forEach((itemDetail,indexDetail)=>{
+                        itemDetail.showContent = utils.replaceHTMLChar(itemDetail.content) 
+
+                        itemDetail.answerList.length > 0 && itemDetail.answerList.forEach((itemAnswer)=>{
+                            itemAnswer.showContent = utils.replaceHTMLChar(itemAnswer.content) 
+                        })
+                        
+                        answerDataObj[itemDetail.id] = {
+                            questionId:itemDetail.id,
+                            seq:[],//选项
+                            answer:''//简答
+                        } 
+                    })
                 }
-            })  
+            })
 
+            this.questionList = data
+            this.answerDataObj = answerDataObj 
         },
         cbFooterHeight(e){
             this.footerHeight = e
@@ -166,8 +221,6 @@ export default {
                 answerList.push(answerDataObj[k])
             }
 
-            console.log(999,'answerList',answerList    )
-
             let param = {
                 startTime : this.startTime,
                 endTime : utils.timeStamp(),
@@ -182,16 +235,22 @@ export default {
                 param.paperId = this.options.paperId
             }
 
-            console.log(999,'param',param)
-
             endApi(param).then((res)=>{
+                if(res.data.code == 0){
+                    let data = JSON.parse(utils.decryptByAES(res.data.encryptParam))
 
+                    this.endData = data
+                    if(this.endData.state != -1){
+                        this.goReport()
+                    }
+                }
             })
         },
         goReport(){
             let params = {
-                paperId:this.options.paperId,
-                mode:this.options.mode
+                practiceId:this.endData.practiceId,
+                stete:this.endData.type,
+                mode:this.options.mode,
             }
 
             uni.redirectTo({
@@ -201,3 +260,6 @@ export default {
     }
 }
 </script>
+
+<style lang="scss" scoped>
+</style>

@@ -121,9 +121,10 @@
                             v-if="item.sort.length > 0"
                         >
                             <view 
+                                :class="v.index == current ? 'on' : ''"
+                                @click="change(v.index)"
                                 v-for="(v,i) in item.sort" 
                                 :key="i" 
-                                @click="change(v.index-1)"
                             >
                                 {{v.index}}
                             </view>
@@ -201,6 +202,10 @@ export default {
         },
         submit(){
             this.$emit('submit')
+        },
+        change(index){
+            this.isShowDialog = false
+            this.$emit('change',index-1)
         }
     }
 }
@@ -392,7 +397,7 @@ export default {
                         margin-right: 0;
                     }
                 }
-                .active {
+                .on {
                     border-color:#548cfd;
                     background: #548cfd;
                     color:#fff;

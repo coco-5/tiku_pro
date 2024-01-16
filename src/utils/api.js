@@ -15,7 +15,6 @@ export function getOpenidApi(callback){
                         let data = JSON.parse(utils.decryptByAES(res.data.encryptParam))
                         uni.setStorageSync('openid',data.openid)
                         resolve()
-                        console.log(999,666)
                         callback()
                     }
                 })
@@ -109,8 +108,6 @@ export function endApi(params){
         openid : uni.getStorageSync('openid') || ''
     })
 
-    console.log(9999,'endApi',params)
-
     return new Promise((resolve, reject)=>{
         _this.$http.post(`/tiku/question/practice/end`,params).then((res)=>{
             resolve(res)
@@ -119,7 +116,9 @@ export function endApi(params){
 }
 
 export function analysisApi(params){
-    params = Object.assign({}, params)
+    params = Object.assign({
+        openid : uni.getStorageSync('openid') || ''    
+    }, params)
 
     return new Promise((resolve, reject)=>{
         _this.$http.post(`/tiku/question/practice/analysis`,params).then((res)=>{

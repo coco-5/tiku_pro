@@ -69,9 +69,12 @@
                     <view class="bd">{{item.description}}</view>
                 </view>
             </template>
-            <view class="item">
+            <view 
+                class="item"
+                v-if="paperDetail.description"
+            >
                 <view class="hd">试卷说明</view>
-                <view class="bd">2023年初级会计实务真题（一）</view>
+                <view class="bd">{{paperDetail.description}}</view>
             </view>
         </view>
 

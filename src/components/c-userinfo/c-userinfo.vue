@@ -143,8 +143,6 @@ export default {
                         if(json.code == 0){
                             let data = JSON.parse(utils.decryptByAES(json.encryptParam))
                             this.avatar = data.avatarUrl
-
-                            console.log(9999,'data',data)
                         }
                     }
                 },

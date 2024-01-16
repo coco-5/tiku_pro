@@ -112,7 +112,6 @@ export default {
                 if(res.data.code == 0){
                     let data = JSON.parse(utils.decryptByAES(res.data.encryptParam)).paperDTOList
 
-                    console.log(999,'data',data)
                     this.$set(this.paperList,this.tabIndex,data)
                 }
             })  

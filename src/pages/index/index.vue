@@ -41,8 +41,9 @@
         </chapter> -->
 
         <paper
-            :examInfo="examInfo"
-            v-if="examInfo"
+            :options="options"
+            :subjectInfo="subjectInfo"
+            v-if="examInfo && subjectInfo"
         >
         </paper>
 
@@ -65,8 +66,9 @@ export default {
     components: { chapter, tiku, paper },
     data(){
         return{
-            options:'',
+            options:{},
             examInfo:{},//用户当前选择的考试{gid,gname} 
+            subjectInfo:{},//用户当前选择的科目{gid,gname}
             subjectList:[],//科目列表
             subjectIndex:0,//当前选择的科目
             examTitleList:[],//考试选择器列表
@@ -105,13 +107,13 @@ export default {
         },
         matchExamInfo(){
             let examInfo = {}
+            let examId = 0
 
             if(this.options.examId || uni.getStorageSync('examInfo')){
-                if(!this.options.examId){
-                    this.options.examId = uni.getStorageSync('examInfo').id
-                }
+                examId = this.options.examId || uni.getStorageSync('examInfo').id
+                
                 for(let i=0;i<this.examList.length;i++){
-                    if(this.examList[i].examId == this.options.examId){
+                    if(this.examList[i].examId == examId){
                         let data = this.examList[i]
                         examInfo = {
                             id:data.examId,

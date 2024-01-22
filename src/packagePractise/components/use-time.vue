@@ -103,6 +103,7 @@ export default {
     }
     .text {
         display:inline-block;
+        margin-top:8rpx;
         vertical-align:middle;
     }
 }

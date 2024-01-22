@@ -8,24 +8,24 @@
 
         <view class="banner">
             <view class="date">2023-08-30 19:22 用时:25秒</view>
-            <view class="rate">正确率：<text>60.5%</text></view>
+            <view class="rate">正确率：<text>{{isLoading ? '--' : (report.correctRate || 0)}}</text></view>
         </view>
 
         <view class="info">
             <view class="item">
-                <view class="num"><text>38</text>道</view>
+                <view class="num"><text>{{isLoading ? '--' : (report.questionNums || 0)}}</text>道</view>
                 <view class="text">总题数</view>
             </view>
             <view class="item">
-                <view class="num"><text>38</text>道</view>
+                <view class="num"><text>{{isLoading ? '--' : (report.rightQuestionNums || 0)}}</text>道</view>
                 <view class="text">答对</view>
             </view>
             <view class="item">
-                <view class="num"><text>38</text>道</view>
+                <view class="num"><text>{{isLoading ? '--' : (report.wrongQuestionNums || 0)}}</text>道</view>
                 <view class="text">答错</view>
             </view>
             <view class="item">
-                <view class="num"><text>38</text>道</view>
+                <view class="num"><text>{{isLoading ? '--' : (report.missQuestionNums || 0)}}</text>道</view>
                 <view class="text">未答</view>
             </view>
         </view>
@@ -101,32 +101,65 @@
 
 <script>
 import utils from '@/utils/utils'
-import { analysisApi } from '@/utils/api'
+import { analysisApi, getPracticeApi } from '@/utils/api'
 export default {
     data(){
         return {
-
+            isLoading:true,
+            report:''
         }
     },
     onLoad(e){
         this.options = e
 
-        this.getAnalysis()
+        this.getList()
     },
     onShow(){
 
     },
     methods:{
+        getList(){
+            let list = [
+                //this.getAnalysis(),
+                this.getPractice()
+            ]
+
+            uni.showLoading()
+
+            Promise.all(list).then((data)=>{
+                this.isLoading = false
+                uni.hideLoading()
+            })
+        },
         getAnalysis(){
             let params = {
                 practiceId:this.options.practiceId,
                 wrongFlag:0
             }
 
-            analysisApi(params).then((res)=>{
-                if(res.data.code == 0){
+            return new Promise((resolve)=>{
+                analysisApi(params).then((res)=>{
+                    if(res.data.code == 0){
+                        let data = JSON.parse(utils.decryptByAES(res.data.encryptParam))
+                        resolve(data)
+                        console.log(999,'analysis',data)
+                    }
+                })
+            })
+        },
+        getPractice(){
+            let params = {
+                practiceId:this.options.practiceId
+            }
+
+            return new Promise((resolve)=>{
+                getPracticeApi(params).then((res)=>{
                     let data = JSON.parse(utils.decryptByAES(res.data.encryptParam))
-                }
+                    resolve(data)
+
+                    this.report = data
+                    console.log(999,'report',this.report)
+                })
             })
         },
         goList(){
@@ -145,14 +178,15 @@ export default {
                 url:path
             })
         },
-        goAnalysis(type = 0,current){
+        goAnalysis(type = 0,item = {}){
             let path = ``
             let params = {
                 practiceId:this.options.practiceId,
                 mode:this.options.mode,
                 type:2,
                 wrongFlag:type,
-                current
+                topIndex:item.topIndex || 0,
+                subIndex:item.subIndex || 0
             }
 
             path = `/packagePractise/pages/practise/practise?${this.$hq.utils.paramsStringify(params)}`

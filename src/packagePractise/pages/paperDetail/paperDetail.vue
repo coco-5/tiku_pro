@@ -56,7 +56,7 @@
         </view>
 
         <view class="mod-desc">
-            <view class="title">题型介绍</view>
+            <!-- <view class="title">题型介绍</view>
             <template
                 v-if="paperDetail.questionGroupList.length > 0"
             >
@@ -68,7 +68,7 @@
                     <view class="hd">{{item.name}}</view>
                     <view class="bd">{{item.description}}</view>
                 </view>
-            </template>
+            </template> -->
             <view 
                 class="item"
                 v-if="paperDetail.description"

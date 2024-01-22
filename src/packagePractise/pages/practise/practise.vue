@@ -21,7 +21,8 @@
             <practise-swiper
                 :options="options"
                 :list="questionList"
-                :current="current"
+                :index="index"
+                :subIndex="subIndex"
                 :answerDataObj="answerDataObj"
                 @answer="answer"
                 @change="change"
@@ -32,7 +33,7 @@
         <practise-footer
             :options="options"
             :list="questionList"
-            :current="current"
+            :current="index"
             :ansCardList="ansCardList"
             @cbFooterHeight="cbFooterHeight"
             @change="change"
@@ -45,7 +46,7 @@
 
 <script>
 import utils from '@/utils/utils'
-import { getDetailByPaperIdApi, getQuestionByPaperIdApi, startApi, endApi } from '@/utils/api'
+import { getPaperDetailApi, startApi, endApi, getPracticeApi, analysisApi } from '@/utils/api'
 import PractiseFooter from '../../components/practise-footer.vue'
 import practiseSwiper from '../../components/practise-swiper.vue'
 import useTime from '../../components/use-time.vue'
@@ -54,12 +55,12 @@ export default {
     data(){
         return {
             options:'',
-            current:0,//当前做题的索引 
+            index:0,//当前做题的索引 
+            subIndex:0,//小题的索引
             questionList:[],//题目列表
             contentStyle:'',
             answerDataObj:{},//答题数据
-            ansCardList:[],
-            useTime:'00:00:00',
+            ansCardList:[],//答题卡
             paperDetail:''
         }
     },
@@ -72,14 +73,22 @@ export default {
 
         this.startTime = utils.timeStamp()
 
-        this.current = this.options.current || 0
+        this.index = this.options.index || 0
 
         if(this.options.type == 1){
             this.startPaper().then(()=>{
-                this.getList()
+                //练习模式获取上次练习的情况
+                if(this.options.state == 1){
+                    this.getPractice().then(()=>{
+                        this.getList()    
+                    })
+                }else{
+                //考试模式直接获取试卷数据
+                    this.getList()
+                }
             })
         }else if(this.options.type == 2){
-            this.getList()
+            this.getAnalysis()
         }
     },
     onShow(){
@@ -95,24 +104,56 @@ export default {
                 startApi(params).then((res)=>{
                     if(res.data.code == 0){
                         let data = JSON.parse(utils.decryptByAES(res.data.encryptParam))
+
+                        this.options.practiceId = data.practiceId 
                         resolve()
+                    }
+                })
+            })
+        },
+        getPractice(){
+            let params = {
+                practiceId:this.options.practiceId
+            }
+
+            return new Promise((resolve)=>{
+                getPracticeApi(params).then((res)=>{
+                    if(res.data.code == 0){
+                        let data = JSON.parse(utils.decryptByAES(res.data.encryptParam))
+
+                        resolve(data)
                     }
                 })
             })
         },
         getList(){
             let list = [
-                this.getDetail(),
-                this.getPaper()
+                this.getDetail()
             ]
 
             uni.showLoading()
 
             Promise.all(list).then((data)=>{
-                this.initDetail(data[0])
-                this.initPaper(data[1])
+                this.initDetail()
                 uni.hideLoading()
             })
+        },
+        getAnalysis(){
+            let params = {
+                practiceId:this.options.practiceId,
+                wrongFlag:this.options.wrongFlag || 0
+            }
+
+            return new Promise((resolve)=>{
+                analysisApi(params).then((res)=>{
+                    if(res.data.code == 0){
+                        let data = JSON.parse(utils.decryptByAES(res.data.encryptParam))
+                        resolve(data)
+                        console.log(999,'analysis',data)
+                    }
+                })
+            })
+
         },
         getDetail(){
             let params = {
@@ -120,77 +161,75 @@ export default {
             }
 
             return new Promise((resolve)=>{
-                getDetailByPaperIdApi(params).then((res)=>{
+                getPaperDetailApi(params).then((res)=>{
                     if(res.data.code == 0){
                         let data = JSON.parse(utils.decryptByAES(res.data.encryptParam))
 
-                        this.paperDetail = data
-                        resolve(data)
+                        this.paperDetail = data.questionGroupList
+                        console.log(999,'paperDetail',this.paperDetail)
+                        resolve()
                     }
                 })
             })
         },
-        getPaper(){
-            let params = {
-                paperId:this.options.paperId
-            }
-        
-            return new Promise((resolve)=>{
-                getQuestionByPaperIdApi(params).then((res)=>{
-                    if(res.data.code == 0){
-                        let data = JSON.parse(utils.decryptByAES(res.data.encryptParam)).questionList
-                        resolve(data)
-                    }
-                })    
-            })
-        },
-        initDetail(data){
-            let groupList = data.questionGroupList
-            let ansCardList = []
-            let count = 1
-
-            groupList.forEach((item)=>{
-                let list = {}
-                let sort = []
-
-                list.groupName = item.name
-                item.questionIds && item.questionIds.length > 0 && item.questionIds.forEach((qItem,qIndex)=>{
-                    sort.push({
-                        index:count,
-                        id:qItem
-                    })
-                    count++
-                })
-                list.sort = sort
-                ansCardList.push(list)  
-            })
-
-            this.ansCardList = ansCardList
-        },
-        initPaper(data){
+        initDetail(){
+            let groupList = this.paperDetail
             let answerDataObj = {}
+            let ansCardList = []//答题卡
+            let showIndex = 1
+            let topIndex = 0
+            let list = []//重新组合的做题数据
 
-            data.forEach((item,index)=>{
-                item.showContent = utils.replaceHTMLChar(item.content)
-                if(item.quType != 4){
-                    item.questionDetailList && item.questionDetailList.length > 0 && item.questionDetailList.forEach((itemDetail,indexDetail)=>{
+            groupList.forEach((value,index)=>{
+                //重置
+                let item = {}
+                let sort = []
+                item.name = value.name
+                item.description = value.description 
+
+                value.groupIsDesc = 1
+                list.push(value)
+
+                value.questionList && value.questionList.length > 0 && value.questionList.forEach((v,i)=>{
+                    v.showContent = utils.replaceHTMLChar(v.content)
+                    v.questionDetailList && v.questionDetailList.length > 0 && v.questionDetailList.forEach((itemDetail,indexDetail)=>{
                         itemDetail.showContent = utils.replaceHTMLChar(itemDetail.content) 
+                        itemDetail.showAnalysis = utils.replaceHTMLChar(itemDetail.analysis) 
+                        itemDetail.showIndex = showIndex
+                        if(itemDetail.quType != 4){
+                            itemDetail.answerList && itemDetail.answerList.length > 0 && itemDetail.answerList.forEach((itemAnswer)=>{
+                                itemAnswer.showContent = utils.replaceHTMLChar(itemAnswer.content) 
+                            })
+                        }
 
-                        itemDetail.answerList.length > 0 && itemDetail.answerList.forEach((itemAnswer)=>{
-                            itemAnswer.showContent = utils.replaceHTMLChar(itemAnswer.content) 
+                        sort.push({
+                            id:itemDetail.id,
+                            topIndex:topIndex+index+1,
+                            subIndex:indexDetail,
+                            showIndex:showIndex,
+                            on:0,
+                            answer:0
                         })
-                        
+                        showIndex++
+
                         answerDataObj[itemDetail.id] = {
                             questionId:itemDetail.id,
                             seq:[],//选项
                             answer:''//简答
                         } 
                     })
-                }
+                    
+                    topIndex++
+                    list.push(v)
+                })
+                
+                item.sort = sort
+                ansCardList.push(item)
             })
 
-            this.questionList = data
-            this.answerDataObj = answerDataObj 
+            this.answerDataObj = answerDataObj
+            this.ansCardList = ansCardList
+            this.questionList = list
         },
         cbFooterHeight(e){
             this.footerHeight = e
@@ -207,11 +246,41 @@ export default {
                 this.contentStyle = `height:calc(100vh - ${height}rpx);`
             }
         },
-        change(index){
-            this.current = index
+        change(topIndex,subIndex){
+            this.index = topIndex
+            this.subIndex = subIndex
+            this.setAnswerCardOptionOn()
         },
-        answer(answerDataObj){
+        answer(answerDataObj,id){
             this.answerDataObj = answerDataObj
+
+            this.setAnswerCardOptionAnswer(id)
+        },
+        setAnswerCardOptionOn(){
+            this.ansCardList.forEach((item)=>{
+                item.sort.forEach((i)=>{
+                    if(i.topIndex == this.index && i.subIndex == this.subIndex){
+                        i.on = 1
+                    }else{
+                        i.on = 0
+                    }
+                })
+            })
+        },
+        setAnswerCardOptionAnswer(id){
+            let ansCardList = this.ansCardList
+            let answerDataObj = this.answerDataObj || {}
+            let isAnswer = (answerDataObj[id].answer || answerDataObj[id].seq.length > 0) ? 1 : 0
+
+            for(let i=0;i<ansCardList.length;i++){
+                let sort = ansCardList[i].sort
+                for(let j=0;j<sort.length;j++){
+                    if(sort[j].id == id){
+                        sort[j].answer = isAnswer
+                        break
+                    }
+                }
+            }
         },
         submit(){
             let answerList = []
@@ -221,7 +290,7 @@ export default {
                 answerList.push(answerDataObj[k])
             }
 
-            let param = {
+            let params = {
                 startTime : this.startTime,
                 endTime : utils.timeStamp(),
                 answerList : answerList,
@@ -230,16 +299,17 @@ export default {
             }
 
             if(this.options.state == 1){
-                param.practiceId = this.options.practiceId
+                params.practiceId = this.options.practiceId
             }else if(this.options.state == 2){
-                param.paperId = this.options.paperId
+                params.paperId = this.options.paperId
             }
 
-            endApi(param).then((res)=>{
+            endApi(params).then((res)=>{
                 if(res.data.code == 0){
                     let data = JSON.parse(utils.decryptByAES(res.data.encryptParam))
 
                     this.endData = data
+                    console.log(999,'end',this.endData)
                     if(this.endData.state != -1){
                         this.goReport()
                     }

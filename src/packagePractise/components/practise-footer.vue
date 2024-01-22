@@ -16,10 +16,12 @@
             >
                 <view 
                     class="prev" 
+                    :class="{disabled:current == 0}"
                     @click="prev"
                 ></view>
                 <view 
                     class="next" 
+                    :class="{disabled:list.length - current - 1 == 0}"
                     @click="next" 
                 ></view>
                 <view class="menu-list">
@@ -68,7 +70,7 @@
                     <view class="pic">
                         <image src="https://oss-hqwx-edu24ol.hqwx.com/miniapp/socrazy/tikupro/common/ico_wx_logo.png" />
                     </view>
-                    <view class="text">问考友</view>
+                    <view class="text">分享</view>
                 </button>
                 
                 <template v-if="!isShareLanding">
@@ -115,18 +117,18 @@
                         v-for="(item,index) in ansCardList" 
                         :key="index"
                     >
-                        <view class="group-name">{{item.groupName}}</view>
+                        <view class="group-name">{{item.name}}</view>
                         <view 
                             class="group-list" 
                             v-if="item.sort.length > 0"
                         >
                             <view 
-                                :class="v.index == current ? 'on' : ''"
-                                @click="change(v.index)"
+                                :class="(v.answer ? 'answer' : '') + (v.on ? ' on' : '')"
+                                @click="change(v)"
                                 v-for="(v,i) in item.sort" 
                                 :key="i" 
                             >
-                                {{v.index}}
+                                {{v.showIndex}}
                             </view>
                         </view>
                     </view>
@@ -170,6 +172,12 @@ export default {
             deep:true,
             handler(n){
             }
+        },
+        ansCardList:{
+            deep:true,
+            handler(n){
+                
+            }
         }
     },
     data(){
@@ -190,12 +198,12 @@ export default {
         prev(){
             if(this.list.length == 0) return
             if(this.current == 0) return
-            this.$emit('change',this.current - 1)
+            this.$emit('change',this.current - 1,0)
         },
         next(){
             if(this.list.length == 0) return
             if(this.current == this.list.length-1) return
-            this.$emit('change',(this.current + 1))
+            this.$emit('change',this.current + 1, 0)
         },
         goPractise(){
             this.$emit('practise')
@@ -203,9 +211,9 @@ export default {
         submit(){
             this.$emit('submit')
         },
-        change(index){
+        change(item){
             this.isShowDialog = false
-            this.$emit('change',index-1)
+            this.$emit('change',item.topIndex,item.subIndex)
         }
     }
 }
@@ -243,6 +251,9 @@ export default {
     .next {
         right:32rpx;
         background:url('https://oss-hqwx-edu24ol.hqwx.com/miniapp/tushu_hqwx/icon-next.png') no-repeat center / 100%;
+    }
+    .disabled {
+        opacity:.2;
     }
 }
 .menu-list{
@@ -396,6 +407,11 @@ export default {
                     &:nth-child(6n){
                         margin-right: 0;
                     }
+                }
+                .answer {
+                    border-color:#EBFFF9;
+                    background: #EBFFF9;
+                    color:#0DD097;
                 }
                 .on {
                     border-color:#548cfd;

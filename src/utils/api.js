@@ -126,3 +126,27 @@ export function analysisApi(params){
         })
     })
 }
+
+export function getPracticeApi(params){
+    params = Object.assign({
+        openid : uni.getStorageSync('openid') || ''    
+    }, params)
+
+    return new Promise((resolve, reject)=>{
+        _this.$http.post(`/tiku/question/practice/getById`,params).then((res)=>{
+            resolve(res)
+        })
+    })
+}
+
+export function getPaperDetailApi(params){
+    params = Object.assign({
+        openid : uni.getStorageSync('openid') || ''    
+    }, params)
+
+    return new Promise((resolve, reject)=>{
+        _this.$http.post(`/tiku/question/paper/getQuestionGroupByPaperId`,params).then((res)=>{
+            resolve(res)
+        })
+    })
+}

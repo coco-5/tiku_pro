@@ -4,19 +4,27 @@
         :style="[customThemeStyle]" 
         duration="300" 
         @animationfinish="changeSwiper" 
-        :current="current"
+        :current="index"
     >	
         <swiper-item 
             v-for="(item,index) in list" 
             :key="index"
         >
             <view 
+                class="swiper-desc"
+                v-if="item.groupIsDesc == 1"
+            >
+                <view class="name">{{item.name}}</view>
+                <view class="desc">{{item.description}}</view>
+            </view>
+            <view 
                 class="swiper-page"
                 :class="(item.quType == 5 ? 'swiper-anli' : '') + (isShowQuestion ? '' : ' hide-question')"
+                v-else
             >
                 <view class="q-top">
                     <view class="q-type">{{questionType[item.quType]}}</view>
-                    <view class="process"><text>{{index+1}}</text>/{{list.length}}</view>
+                    <view class="process"><text>{{showIndex}}</text>/{{questionCount}}</view>
                 </view>
 
                 <view class="title">
@@ -38,12 +46,12 @@
                         >
                             <view 
                                 class="item"
-                                :class="subCurrent == indexDetail ? 'on' : ''"
-                                @click="changeSub(indexDetail)"
+                                :class="subIndex == indexDetail ? 'on' : ''"
+                                @click="changeSubIndex(indexDetail)"
                                 v-for="(itemDetail,indexDetail) in item.questionDetailList"
                                 :key="indexDetail"
                             >
-                                {{indexDetail+1}}-{{index+1}}
+                                {{itemDetail.showIndex}}题
                             </view>
                         </scroll-view>
                     </view>
@@ -52,7 +60,7 @@
                 <view class="question-bd">
                     <view 
                         class="bd-item"
-                        v-show="subCurrent == indexDetail"
+                        v-show="subIndex == indexDetail"
                         v-for="(itemDetail,indexDetail) in item.questionDetailList"
                         :key="indexDetail"
                     >
@@ -68,7 +76,7 @@
                                 <textarea 
                                     maxlength="500" 
                                     :disabled="options.type != 1" 
-                                    @input="input($event,subItem, 0)" 
+                                    @input="input($event,itemDetail)" 
                                     placeholder="输入你的答案..." 
                                     placeholder-style="color:#999"
                                 ></textarea>
@@ -143,7 +151,11 @@ export default {
             type:Array,
             default:[]
         },
-        current:{
+        index:{
+            type:[String,Number],
+            default:0
+        },
+        subIndex:{
             type:[String,Number],
             default:0
         },
@@ -155,27 +167,33 @@ export default {
         list:{
             deep:true,
             handler(n){
-                
+                if(n){
+                    this.setCount()
+                }    
             }
         },
-        current:{
+        index:{
             deep:true,
             handler(n){
                 this.isShowQuestion = true
-                this.subCurrent = 0
+
+                this.setShowIndex()
+            }
+        },
+        subIndex:{
+            deep:true,
+            handler(n){
             }
         },
         answerDataObj:{
             deep:true,
-            handler(n){
-
-            }
+            handler(n){}
         }
     },
     data(){
         return {
-            swiperList:[],
-            subCurrent:0,//小题索引
+            questionCount:0,
+            showIndex:0,
             questionType:{
                 "1": "判断题",
                 "2": "单选题",
@@ -196,20 +214,45 @@ export default {
     created(){
     },
     methods:{
-        changeSwiper(e){
-            this.$emit('change',e.detail.current)
+        setCount(){
+            let count = 0
+            this.list.forEach(item=>{
+                if(!item.groupIsDesc){
+                    item.questionDetailList.forEach((itemDetail)=>{
+                        count++
+                    })
+                }
+            })
+            this.questionCount = count
         },
-        changeSub(index){
-            this.subCurrent = index
+        setShowIndex(){ 
+            if(!this.list[this.index].groupIsDesc){
+                this.showIndex = this.list[this.index].questionDetailList[0].showIndex
+            }
+        },
+        changeSwiper(e){
+            this.$emit('change',e.detail.current,this.subIndex)
+        },
+        changeSubIndex(index){
+            this.$emit('change',this.index, index)
         },
         // 问答/简答
-        input(e,item,index){
+        input(e,itemDetail){
+            if(this.options.type != 1) return
+            
             if(this.timer){
                 clearTimeout(this.timer)
                 this.timer = null
             }
             this.timer = setTimeout(()=>{
-                console.log(999,111,e.detail.value)
+                let answerItem = {
+                    questionId : itemDetail.id,
+                    seq : [],
+                    answer : e.detail.value
+                }
+
+                this.$set(this.answerDataObj,itemDetail.id,answerItem)
+                this.$emit('answer',this.answerDataObj,itemDetail.id)
             },300)
         },
         // 选择答案
@@ -249,13 +292,13 @@ export default {
                     this.$set(this.answerDataObj,itemAnswer.questionId,answerItem)
                 }
             }
-            this.$emit('answer',this.answerDataObj)
+            this.$emit('answer',this.answerDataObj,itemAnswer.questionId)
         },
         next(){
-            let item = this.list[this.current]
+            let item = this.list[this.index]
 
             if(item.quType != 5){
-                this.$emit('change',this.current+1)
+                this.$emit('change',this.index+1,0)
             }
         },
         checkUserChoose(id,seq){
@@ -346,8 +389,8 @@ export default {
     line-height:40rpx;
     color:#000222;
     font-size:30rpx;
+    text-align:justify;
 }
-
 .question-hd {
     position:relative;
     height:100rpx;
@@ -383,7 +426,6 @@ export default {
         }
     }
 }
-
 .question-bd {
     padding:0 32rpx;
     .item-bd {
@@ -498,6 +540,24 @@ export default {
     .bd {
         color:#90919B;  
         font-size:28rpx;   
+    }
+}
+
+.swiper-desc {
+    min-height:100vh;
+    background:#F9F9F9;
+    .name {
+        margin-bottom:32rpx;
+        padding-top:40rpx;
+        color:#333;
+        font-size:48rpx;
+        font-weight:500;
+        text-align:center;
+    }
+    .desc {
+        margin:0 40rpx;
+        font-size:30rpx;
+        color:#999;
     }
 }
 </style>

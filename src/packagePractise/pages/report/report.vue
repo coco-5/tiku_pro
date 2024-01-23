@@ -7,7 +7,7 @@
         </c-navigation-bar>
 
         <view class="banner">
-            <view class="date">2023-08-30 19:22 用时:25秒</view>
+            <view class="date">{{isLoading ? '--' : report.date}} 用时:{{isLoading ? '--' : (report.usedTimeFormat || 0)}}</view>
             <view class="rate">正确率：<text>{{isLoading ? '--' : (report.correctRate || 0)}}</text></view>
         </view>
 
@@ -39,32 +39,27 @@
                     <view class="no">未答</view>
                 </view>
             </view>
-            <view class="bd">
-                <view class="item">
-                    <view class="title">单项选择题</view>
+
+            <view 
+                class="bd"
+                v-if="questionList.length > 0"
+            >
+                <view 
+                    class="item"
+                    v-for="(item,index) in questionList"
+                    :key="index"
+                >
+                    <view class="title">{{item.name}}</view>
                     <view class="l">
                         <view 
-                            class="a right"
-                            @click="goAnalysis(0,index)"
+                            class="a"
+                            :class="itemSort.className"
+                            @click="goAnalysis(0,itemSort)"
+                            v-for="(itemSort,itemIndex) in item.sort"
+                            :key="itemIndex"
                         >
-                            1
+                            {{itemSort.showIndex}}
                         </view>
-                        <view class="a error">2</view>
-                        <view class="a">3</view>
-                        <view class="a">4</view>
-                        <view class="a">5</view>
-                        <view class="a">6</view>
-                        <view class="a">7</view>
-                        <view class="a">8</view>
-                    </view>
-                </view>
-                <view class="item">
-                    <view class="title">多项选择题</view>
-                    <view class="l">
-                        <view class="a">1</view>
-                        <view class="a">2</view>
-                        <view class="a">3</view>
-                        <view class="a">4</view>
                     </view>
                 </view>
             </view>
@@ -106,7 +101,8 @@ export default {
     data(){
         return {
             isLoading:true,
-            report:''
+            report:'',
+            questionList:[]
         }
     },
     onLoad(e){
@@ -157,10 +153,51 @@ export default {
                     let data = JSON.parse(utils.decryptByAES(res.data.encryptParam))
                     resolve(data)
 
+                    data.date = utils.timeFormat(data.startTime,'yyyy-mm-dd hh:MM')
+                    data.usedTimeFormat = utils.secondsFormat(data.usedTime)
+
                     this.report = data
-                    console.log(999,'report',this.report)
+                    console.log(999,'report',data)
+                    this.initQuestionList(data.questionGroupList)
                 })
             })
+        },
+        initQuestionList(data){
+            let list = []
+            let obj = {}
+            let sort = []
+            let count = 1
+            let page = 1
+
+            data.forEach((value,index)=>{
+                obj = {}
+                sort = []
+                obj.name = value.name
+                value.practiceQuestionList.forEach((v,i)=>{
+                    v.analysisDetailList.forEach((m,n)=>{
+                        let className = 'miss'
+
+                        if(m.answerState == -1){
+                            className = 'error'
+                        }else if(m.answerState == 1){
+                            className = 'right'    
+                        }
+                        sort.push({
+                            topIndex:index+1+page,
+                            subIndex:n,
+                            sate:m.answerState,
+                            className,
+                            showIndex:count
+                        })  
+                        count++ 
+                    })
+                    page++
+                })   
+                obj.sort = sort
+                list.push(obj) 
+            })
+            this.questionList = list
+            console.log(999,'questionList',list)
         },
         goList(){
             let path = ``
@@ -190,6 +227,8 @@ export default {
             }
 
             path = `/packagePractise/pages/practise/practise?${this.$hq.utils.paramsStringify(params)}`
+
+            console.log(999,'path',path)
 
             uni.navigateTo({
                 url:path
@@ -373,7 +412,7 @@ export default {
                 .a {
                     box-sizing:border-box;
                     display:inline-block;
-                    margin:0 24rpx 24rpx 0;
+                    margin:0 24rpx 26rpx 0;
                     width:64rpx;
                     height:64rpx;
                     line-height:64rpx;

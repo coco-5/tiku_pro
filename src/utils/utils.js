@@ -31,6 +31,17 @@ let utils = {
         };
         return fmt;
     },
+    secondsFormat(seconds){
+        let h = this.formatNumber(parseInt(seconds/3600))
+        let m = this.formatNumber(parseInt((seconds%3600)/60))
+        let s = this.formatNumber(seconds%60)
+
+        if(seconds < 60){
+            return `${s}秒`
+        }else{
+            return `${h}时${m}分${s}秒`
+        }
+    },
     compareBaseSDKVersion(v){
         let sdkv = uni.getSystemInfoSync().SDKVersion
         var va = v.split('.'), sdkva = sdkv.split('.');

@@ -58,6 +58,15 @@
                 </view>
 
                 <view class="question-bd">
+                   <!--  <swiper
+                        duration="300" 
+                        @animationfinish="changeSwiper" 
+                        :current="index"
+                    >
+                        <swiper-item>
+
+                        </swiper-item>
+                    </swiper> -->
                     <view 
                         class="bd-item"
                         v-show="subIndex == indexDetail"
@@ -88,7 +97,7 @@
                             <view class="list-options">
                                 <view 
                                     class="item"
-                                    :class="item.quType == 2 ? '' : 'option-multiple'"
+                                    :class="itemDetail.quType == 2 ? '' : 'option-multiple'"
                                     @click="chooseoOption(item, itemAnswer)"
                                     v-for="(itemAnswer,indexAnswer) in itemDetail.answerList"
                                     :key="indexAnswer"
@@ -107,29 +116,30 @@
                                 </view>
                             </view>
                         </template>
+
+                        <view 
+                            class="mod-answer"
+                            v-if="options.type == 2 && itemDetail.quType != 4"
+                        >
+                        {{ itemDetail.quType }}
+                            <view class="hd">答案解析</view>
+                            <view class="bd">
+                                <view class="a">正确答案：B</view>
+                                <view class="b">你的答案：D</view>
+                                <view class="c">回答错误</view>
+                            </view>
+                        </view>
+
+                        <view 
+                            class="mod-analysis"
+                            v-if="options.type == 2"
+                        >
+                            <view class="hd">题目解析</view>
+                            <view class="bd">
+                                <rich-text :nodes="itemDetail.showAnalysis"></rich-text>
+                            </view>
+                        </view>
                             
-                    </view>
-                </view>
-
-                <view 
-                    class="mod-answer"
-                    v-if="options.type == 2"
-                >
-                    <view class="hd">答案解析</view>
-                    <view class="bd">
-                        <view class="a">正确答案：B</view>
-                        <view class="b">你的答案：D</view>
-                        <view class="c">回答错误</view>
-                    </view>
-                </view>
-
-                <view 
-                    class="mod-analysis"
-                    v-if="options.type == 2"
-                >
-                    <view class="hd">题目解析</view>
-                    <view class="bd">
-                        <rich-text nodes="12121"></rich-text>
                     </view>
                 </view>
             </view>
@@ -495,7 +505,6 @@ export default {
 }
 
 .mod-answer {
-    margin:0 32rpx;
     padding:40rpx 0;
     border-bottom:1rpx solid #EBECEE;
     .hd {
@@ -529,7 +538,7 @@ export default {
 }
 
 .mod-analysis {
-    padding:40rpx 32rpx;
+    padding:40rpx 0;
     .hd {
         margin-bottom:24rpx;
         height:32rpx;
@@ -539,7 +548,8 @@ export default {
     }
     .bd {
         color:#90919B;  
-        font-size:28rpx;   
+        font-size:28rpx;  
+        text-align:justify; 
     }
 }
 

@@ -5,12 +5,12 @@
             <view class="tab">
                 <view 
                     class="item"
-                    :class="{on:tabIndex == index}"
+                    :class="('item-' + item.type) + (tabIndex == index ? ' on ' : '')"
                     @click="changeTab(index)"
                     v-for="(item,index) in tabList"
                     :key="index"
                 >
-                    {{item.name}}
+                    {{tabIndex == index ? '' : item.name}}
                 </view>
             </view>
 
@@ -69,13 +69,13 @@ export default {
             loading:false,
             tabList:[
                 {
-                    type:1,
+                    type:'lnzt',
                     name:'历年真题',
                     mode:3,
                     
                 },
                 {
-                    type:2,
+                    type:'mnks',
                     name:'模拟考试',
                     mode:4
                 }
@@ -86,7 +86,6 @@ export default {
     },
     mounted(){
         this.mode = this.tabList[this.tabIndex].mode
-        console.log(999,555,this.mode)
     },
     methods:{
         getPaper(){
@@ -150,18 +149,26 @@ export default {
             height:64rpx;
             line-height:64rpx;
             background:#F1F1F1;
-            border:1rpx solid #E0E4E7;
             border-radius:8rpx;
+            border:1px solid #E0E4E7;
             color:#90919B;
             font-size:24rpx;
             text-align:center;
             vertical-align:top;
-            &.on {
-                //height:72rpx;
-                //line-height:72rpx;
+            &.item-lnzt.on {
+                background-image:url("https://oss-hqwx-edu24ol.hqwx.com/miniapp/socrazy/tikupro/index/tab-lnzt.png");
                 color:#2575FF;
-                //background:url("https://oss-hqwx-edu24ol.hqwx.com/miniapp/socrazy/tikupro/common/tab.png") no-repeat;
-                //background-size:contain;
+            }
+            &.item-mnks.on {
+                background-image:url("https://oss-hqwx-edu24ol.hqwx.com/miniapp/socrazy/tikupro/index/tab-mnks.png");
+                color:#2575FF;
+            }
+            &.on {
+                height:72rpx;
+                line-height:72rpx;
+                background-repeat:no-repeat;
+                background-size:contain;
+                border:0 none;
             }
         }
     }

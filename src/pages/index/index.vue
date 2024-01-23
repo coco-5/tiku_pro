@@ -13,7 +13,7 @@
                         @change="changeExam"
                     >
                         <view class="picker-text">
-                            {{examTitleList[examIndex]}}
+                            {{examTitleList[examIndex] || ''}}
                         </view>
                     </picker>
                 </view>

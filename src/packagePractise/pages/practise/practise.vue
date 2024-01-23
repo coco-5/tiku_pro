@@ -89,6 +89,8 @@ export default {
                 }
             })
         }else if(this.options.type == 2){
+            //this.index = this.options.topIndex
+            //this.subIndex = this.options.subIndex
             this.getAnalysis()
         }
     },
@@ -258,7 +260,7 @@ export default {
                         itemDetail.showIndex = showIndex
                         itemDetail.showAnalysis = utils.replaceHTMLChar(itemDetail.analysis)  
 
-                        ids.push(itemDetail.id)
+                        ids.push(itemDetail.questionId)
 
                         if(itemDetail.quType != 4){
                             itemDetail.answerList && itemDetail.answerList.length > 0 && itemDetail.answerList.forEach((itemAnswer)=>{
@@ -295,7 +297,8 @@ export default {
             this.answerDataObj = answerDataObj
             this.ansCardList = ansCardList
             this.questionList = list
-            console.log(999,'questionIds',questionIds)
+            this.questionIds = questionIds
+            console.log(999,'questionList',this.questionList)
         },
         cbFooterHeight(e){
             this.footerHeight = e

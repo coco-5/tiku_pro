@@ -55,92 +55,48 @@
                             </view>
                         </scroll-view>
                     </view>
-                </view>
+                </view> 
 
                 <view class="question-bd">
-                   <!--  <swiper
-                        duration="300" 
-                        @animationfinish="changeSwiper" 
-                        :current="index"
-                    >
-                        <swiper-item>
-
-                        </swiper-item>
-                    </swiper> -->
-                    <view 
-                        class="bd-item"
-                        v-show="subIndex == indexDetail"
-                        v-for="(itemDetail,indexDetail) in item.questionDetailList"
-                        :key="indexDetail"
-                    >
-                        <rich-text 
-                            class="item-title" 
-                            :nodes="itemDetail.showContent"
-                            v-if="item.quType == 5"
+                    <template v-if="item.quType == 5">
+                        <swiper
+                            class="bd-swiper"
+                            duration="300" 
+                            @animationfinish="changesubSwiper" 
+                            :current="subIndex"
                         >
-                        </rich-text>
-
-                        <template v-if="item.quType == 4">
-                            <view class="textarea">
-                                <textarea 
-                                    maxlength="500" 
-                                    :disabled="options.type != 1" 
-                                    @input="input($event,itemDetail)" 
-                                    placeholder="输入你的答案..." 
-                                    placeholder-style="color:#999"
-                                ></textarea>
-                                <text class="tips">注：本试题为主观题，请参考解析自行评分</text>
-                            </view>
-                        </template>
-
-                        <template v-else>
-                            <view class="list-options">
-                                <view 
-                                    class="item"
-                                    :class="itemDetail.quType == 2 ? '' : 'option-multiple'"
-                                    @click="chooseoOption(item, itemAnswer)"
-                                    v-for="(itemAnswer,indexAnswer) in itemDetail.answerList"
-                                    :key="indexAnswer"
-                                >
-                                    <view 
-                                        class="label"
-                                        :class="{
-                                            checked:options.type == 1  && checkUserChoose(itemAnswer.questionId,itemAnswer.seq)
-                                        }"
-                                    >
-                                        {{itemAnswer.seq}}
-                                    </view>
-                                    <view class="text">
-                                        <rich-text :nodes="itemAnswer.showContent"></rich-text>
-                                    </view>
-                                </view>
-                            </view>
-                        </template>
-
-                        <view 
-                            class="mod-answer"
-                            v-if="options.type == 2 && itemDetail.quType != 4"
+                            <swiper-item
+                                class="bd-item"
+                                v-for="(itemDetail,indexDetail) in item.questionDetailList"
+                                :key="indexDetail" 
+                            >
+                                <answer
+                                    :quType="item.quType"
+                                    :options="options"
+                                    :detail="itemDetail"
+                                    :answerDataObj="answerDataObj"
+                                    @input="input"
+                                    @choose="chooseOption"
+                                ></answer>
+                            </swiper-item>
+                        </swiper>
+                    </template>
+                    <template v-else>
+                        <view
+                            class="bd-item"
+                            v-for="(itemDetail,indexDetail) in item.questionDetailList"
+                            :key="indexDetail" 
                         >
-                        {{ itemDetail.quType }}
-                            <view class="hd">答案解析</view>
-                            <view class="bd">
-                                <view class="a">正确答案：B</view>
-                                <view class="b">你的答案：D</view>
-                                <view class="c">回答错误</view>
-                            </view>
+                            <answer
+                                :quType="item.quType"
+                                :options="options"
+                                :detail="itemDetail"
+                                :answerDataObj="answerDataObj"
+                                @input="input"
+                                @choose="chooseOption"
+                            ></answer>
                         </view>
-
-                        <view 
-                            class="mod-analysis"
-                            v-if="options.type == 2"
-                        >
-                            <view class="hd">题目解析</view>
-                            <view class="bd">
-                                <rich-text :nodes="itemDetail.showAnalysis"></rich-text>
-                            </view>
-                        </view>
-                            
-                    </view>
+                    </template>
                 </view>
             </view>
         </swiper-item>
@@ -152,7 +108,9 @@
 // mode 1题海 2章节 3历年真题 4模拟考试
 // state 1练习 2考试
 import utils from '@/utils/utils'
+import answer from './answer.vue'
 export default {
+  components: { answer },
     props:{
         options:{
             type:Object
@@ -218,12 +176,16 @@ export default {
                 '--option-right-background':'#4BCD8A',   //解析时，正确答案选项背景色
                 '--option-error-background':'#EB5B5A',   //解析时，打错选项背景色
             },
-            isShowQuestion:true
+            isShowQuestion:true,
+            questionStyle:''
         }
     },
     created(){
+        this.initStyle()
     },
     methods:{
+        initStyle(){
+        },
         setCount(){
             let count = 0
             this.list.forEach(item=>{
@@ -243,13 +205,14 @@ export default {
         changeSwiper(e){
             this.$emit('change',e.detail.current,this.subIndex)
         },
+        changesubSwiper(e){
+            this.$emit('change',this.index, e.detail.current)
+        },
         changeSubIndex(index){
             this.$emit('change',this.index, index)
         },
         // 问答/简答
         input(e,itemDetail){
-            if(this.options.type != 1) return
-            
             if(this.timer){
                 clearTimeout(this.timer)
                 this.timer = null
@@ -266,24 +229,23 @@ export default {
             },300)
         },
         // 选择答案
-        chooseoOption(item, itemAnswer){
-            if(this.options.type != 1) return 
+        chooseOption(itemDetail,itemAnswer){
 
-            let answerItem = this.answerDataObj[itemAnswer['questionId']] || {
-                questionId : itemAnswer.questionId,
+            let answerItem = this.answerDataObj[itemDetail.id] || {
+                questionId : itemDetail.id,
                 seq : [],
                 answer : ''
             }
             let ansIndex = answerItem.seq.indexOf(itemAnswer.seq)
 
             // 单选或者判断题
-            if(item.quType == 1 || item.quType == 2){
+            if(itemDetail.quType == 1 || itemDetail.quType == 2){
                 answerItem.seq = ansIndex > -1 ? [] : [itemAnswer.seq]
                 if(ansIndex > -1){
                     // 取消选择
-                    delete this.answerDataObj[itemAnswer.questionId]
+                    delete this.answerDataObj[itemDetail.id]
                 }else{
-                    this.$set(this.answerDataObj,itemAnswer.questionId,answerItem)
+                    this.$set(this.answerDataObj,itemDetail.id,answerItem)
                 }
                 // 下一题
                 if(answerItem.seq.length > 0){
@@ -297,12 +259,12 @@ export default {
                     answerItem.seq.push(itemAnswer.seq)
                 }
                 if(answerItem.seq.length == 0){
-                    delete this.answerDataObj[itemAnswer.questionId]
+                    delete this.answerDataObj[itemDetail.id]
                 }else{
-                    this.$set(this.answerDataObj,itemAnswer.questionId,answerItem)
+                    this.$set(this.answerDataObj,itemDetail.id,answerItem)
                 }
             }
-            this.$emit('answer',this.answerDataObj,itemAnswer.questionId)
+            this.$emit('answer',this.answerDataObj,itemDetail.id)
         },
         next(){
             let item = this.list[this.index]
@@ -345,8 +307,10 @@ export default {
             height:40%;
             overflow-y:auto;
         }
+        .question-bd {
+            height:calc(100% - 104rpx - 40% - 64rpx - 100rpx);
+        }
         .bd-item {
-            margin-top:24rpx;
         }
     }
     &.hide-question {
@@ -438,118 +402,11 @@ export default {
 }
 .question-bd {
     padding:0 32rpx;
+    .bd-swiper {
+        height:100%;
+    }
     .item-bd {
 
-    }
-}
-
-.list-options {
-    padding:48rpx 0 0;
-    //border-bottom:16rpx solid #F6F6F6;
-    .item {
-        position:relative;
-        margin-bottom:40rpx;
-        padding-left:96rpx;
-        min-height:72rpx;
-        line-height:72rpx;
-        color:#000222;
-        font-size:28rpx;
-        &.option-multiple {
-            .label {
-                border-radius:18rpx;
-            }
-        }
-        .label {
-            position:absolute;
-            top:50%;
-            left:0;
-            transform:translateY(-50%);
-            width:72rpx;
-            line-height:72rpx;
-            background:#F4F5F8;
-            border-radius:36rpx;
-            color:#3D4044;
-            text-align:center;
-            &.checked {
-                background: var(--option-checked-background);
-                color:#FFF;
-            }
-            &.right {
-                background:var(--option-right-background);
-                color:#FFF;
-            }
-            &.error {
-                background:var(--option-error-background);
-                color:#FFF;
-            }
-        }
-        .text {
-            display:inline-block;
-            line-height:36rpx;
-            vertical-align:middle;
-        }
-    }
-}
-
-.textarea {
-    textarea {
-        box-sizing:border-box;
-        padding:16rpx;
-        width:100%;
-        background:#F0F0F0;
-        border:1px solid #EEE;
-    }
-    .tips {
-        color:#999;
-    }
-}
-
-.mod-answer {
-    padding:40rpx 0;
-    border-bottom:1rpx solid #EBECEE;
-    .hd {
-        margin-bottom:24rpx;
-        height:32rpx;
-        line-height:32rpx;
-        color:#000222;
-        font-size:30rpx;
-    }
-    .bd {
-        position:relative;
-        font-size:28rpx;
-        view {
-            display:inline-block;
-            vertical-align:middle;
-            &.a {
-                margin-right:40rpx;
-                color:#00D6C1;
-            }
-            &.b {
-                color:#FF5151;
-            }
-            &.c {
-                position:absolute;
-                top:0;
-                right:0;
-                color:#90919B;
-            }
-        }
-    }
-}
-
-.mod-analysis {
-    padding:40rpx 0;
-    .hd {
-        margin-bottom:24rpx;
-        height:32rpx;
-        line-height:32rpx;
-        color:#000222;
-        font-size:30rpx;
-    }
-    .bd {
-        color:#90919B;  
-        font-size:28rpx;  
-        text-align:justify; 
     }
 }
 

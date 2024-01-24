@@ -1,5 +1,5 @@
 <template>
-    <view class="a">
+    <view class="box-answer">
         <rich-text 
             class="item-title" 
             :nodes="detail.showContent"
@@ -12,6 +12,7 @@
                 <textarea 
                     maxlength="500" 
                     :disabled="options.type != 1" 
+                    :value="detail.answerContent" 
                     @input="input($event,detail)" 
                     placeholder="输入你的答案..." 
                     placeholder-style="color:#999"
@@ -32,7 +33,9 @@
                     <view 
                         class="label"
                         :class="{
-                            checked:options.type == 1 && checkUserChoose(detail.id,itemAnswer.seq)
+                            'checked':options.type == 1 && checkUserChoose(detail.id,itemAnswer.seq),
+                            'right':options.type == 2 && checkUserChoose2(detail.answerOption,itemAnswer.seq),
+                            'error':options.type == 2  && checkUserChoose3(detail.id,itemAnswer.seq,detail.answerOption),
                         }"
                     >
                         {{itemAnswer.seq}}
@@ -50,8 +53,8 @@
         >
             <view class="hd">答案解析</view>
             <view class="bd">
-                <view class="a">正确答案：{{detail.answerSeq}}</view>
-                <view class="b">你的答案：D</view>
+                <view class="a">正确答案：{{detail.answerOption || ''}}</view>
+                <view class="b">你的答案：{{detail.answerOption}}</view>
                 <view class="c">{{detail.answerState == 0 ? '未回答' : (detail.answerState == -1 ? '回答错误' : '回答正确')}}</view>
             </view>
         </view>
@@ -87,9 +90,7 @@ export default {
     watch:{
         detail:{
             deep:true,
-            handler(n){
-                console.log(999,'detail',n)
-            }
+            handler(n){}
         },
         quType:{
             deep:true,
@@ -99,6 +100,8 @@ export default {
             deep:true,
             handler(n){}
         }
+    },
+    mounted(){
     },
     methods:{
         // 问答/简答
@@ -114,13 +117,23 @@ export default {
         checkUserChoose(id,seq){
             if(this.answerDataObj && this.answerDataObj[id] && this.answerDataObj[id].seq.indexOf(seq) > -1) return true
             return false  
-        }
+        },
+        checkUserChoose2(answerOption,seq){
+            if(answerOption){
+                if(answerOption.indexOf(seq) > -1) return true
+            } 
+            return false
+        },
+        checkUserChoose3(id,seq,answerOption){
+            if(this.answerDataObj[id] && this.answerDataObj[id].answer && this.answerDataObj[id].answer.indexOf(seq) > -1 && answerOption.indexOf(seq) == -1) return true
+            return false
+        },
     }
 }
 </script>
 
 <style lang="scss" scoped>
-.a {
+.box-answer {
     box-sizing:border-box;
     padding-top:24rpx;
     height:100%;

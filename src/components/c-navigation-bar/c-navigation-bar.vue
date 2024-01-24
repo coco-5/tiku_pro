@@ -207,7 +207,7 @@ export default {
             }
         }
         &.home {
-            margin-top:8rpx;
+            margin-top:13rpx;
             image {
                 width:34rpx;
                 height:34rpx;
@@ -220,6 +220,9 @@ export default {
     border:1px solid rgba(151, 151, 151, 0.2);
     view {
         &.back {
+            image {
+                margin-top:6rpx;
+            }
             &:before {
                 background:rgba(151, 151, 151, 0.2);
             }

@@ -259,6 +259,10 @@ export default {
                         itemDetail.showContent = utils.replaceHTMLChar(itemDetail.content)  
                         itemDetail.showIndex = showIndex
                         itemDetail.showAnalysis = utils.replaceHTMLChar(itemDetail.analysis)  
+                        itemDetail.id = itemDetail.questionId
+                        if(itemDetail.answerSeq){
+                            itemDetail.answerOption = itemDetail.answerSeq.join(',')
+                        }
 
                         ids.push(itemDetail.questionId)
 
@@ -269,7 +273,7 @@ export default {
                         }
 
                         sort.push({
-                            id:itemDetail.id,
+                            id:itemDetail.questionId,
                             topIndex:topIndex+index+1,
                             subIndex:indexDetail,
                             showIndex:showIndex,
@@ -277,8 +281,8 @@ export default {
                             answer:0
                         })
 
-                        answerDataObj[itemDetail.id] = {
-                            questionId:itemDetail.id,
+                        answerDataObj[itemDetail.questionId] = {
+                            questionId:itemDetail.questionId,
                             seq:[],//选项
                             answer:''//简答
                         } 

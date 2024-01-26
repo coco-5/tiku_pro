@@ -155,6 +155,10 @@ export default {
             type:[String,Number],
             default:0
         },
+        subIndex:{
+            type:[String,Number],
+            default:0
+        },
         isShareLanding:{
             type:Boolean,
             default:false
@@ -173,6 +177,21 @@ export default {
             handler(n){
             }
         },
+        subIndex:{
+            deep:true,
+            handler(n){
+                if(this.list.length > 0){
+                    this.list.forEach((item)=>{
+                        if(item.groupIsDesc == 1){
+                            this.qid = 0
+                        }else{
+
+                        }
+                    })
+                }
+                console.log(999,'list',this.list)
+            }
+        },
         ansCardList:{
             deep:true,
             handler(n){
@@ -184,6 +203,7 @@ export default {
         return {
             style:'',
             isShowDialog:false,
+            qid:'', 
         }
     },
     created(){

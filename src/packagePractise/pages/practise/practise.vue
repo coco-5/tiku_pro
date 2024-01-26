@@ -34,6 +34,7 @@
             :options="options"
             :list="questionList"
             :current="index"
+            :subIndex="subIndex"
             :ansCardList="ansCardList"
             @cbFooterHeight="cbFooterHeight"
             @change="change"
@@ -46,7 +47,7 @@
 
 <script>
 import utils from '@/utils/utils'
-import { getPaperDetailApi, startApi, endApi, getPracticeApi, analysisApi } from '@/utils/api'
+import { getPaperDetailApi, startApi, endApi, getPracticeApi, analysisApi, getQuestionApi } from '@/utils/api'
 import PractiseFooter from '../../components/practise-footer.vue'
 import practiseSwiper from '../../components/practise-swiper.vue'
 import useTime from '../../components/use-time.vue'
@@ -62,19 +63,16 @@ export default {
             answerDataObj:{},//答题数据
             ansCardList:[],//答题卡
             paperDetail:'',
-            questionIds:[],//题目id组
         }
     },
     onLoad(e){
-        // type 1做题 2解析 3查看，没有解析
+        // type 1做题 2解析 3单题解析
         // mode 1题海 2章节 3历年真题 4模拟考试
         // state 1练习 2考试
 
         this.options = e
 
         this.startTime = utils.timeStamp()
-
-        this.index = this.options.index || 0
 
         if(this.options.type == 1){
             this.startPaper().then(()=>{
@@ -92,6 +90,8 @@ export default {
             //this.index = this.options.topIndex
             //this.subIndex = this.options.subIndex
             this.getAnalysis()
+        }else if(this.options.type == 3){
+            this.getQuestion()
         }
     },
     onShow(){
@@ -240,13 +240,11 @@ export default {
             let showIndex = 1
             let topIndex = 0
             let list = []//重新组合的做题数据
-            let questionIds = []
 
             analysis.forEach((value,index)=>{
                 //重置
                 let item = {}
                 let sort = []
-                let ids = []
                 item.name = value.name
                 item.description = value.description 
 
@@ -264,13 +262,17 @@ export default {
                             itemDetail.answerOption = itemDetail.answerSeq.join(',')
                         }
 
-                        ids.push(itemDetail.questionId)
+                        let rightOption = []
 
                         if(itemDetail.quType != 4){
                             itemDetail.answerList && itemDetail.answerList.length > 0 && itemDetail.answerList.forEach((itemAnswer)=>{
                                 itemAnswer.showContent = utils.replaceHTMLChar(itemAnswer.content) 
+                                if(itemAnswer.isRight == 1){
+                                    rightOption.push(itemAnswer.seq)
+                                }
                             })
                         }
+                        itemDetail.rightOption = rightOption.join(',')
 
                         sort.push({
                             id:itemDetail.questionId,
@@ -295,14 +297,30 @@ export default {
                 })
 
                 item.sort = sort
-                questionIds.push(ids)
                 ansCardList.push(item)
             })
             this.answerDataObj = answerDataObj
             this.ansCardList = ansCardList
             this.questionList = list
-            this.questionIds = questionIds
-            console.log(999,'questionList',this.questionList)
+
+
+            console.log(999,'questionList',list)
+        },
+        getQuestion(){
+            let params = {
+                questionId:this.options.questionId
+            }
+
+            return new Promise((resolve)=>{
+                getQuestionApi(params).then((res)=>{
+                    if(res.data.code == 0){
+                        let data = JSON.parse(utils.decryptByAES(res.data.encryptParam))
+
+                        console.log(999,'paperDetail',data)
+                        resolve()
+                    }
+                })
+            })
         },
         cbFooterHeight(e){
             this.footerHeight = e
@@ -402,10 +420,28 @@ export default {
         }
     },
     onShareAppMessage(e){
-        let params = {
-            questionId:0
+        let list = this.questionList
+        let questionId = 0
+        for(let i=0; i<list.length; i++){
+            if(i == this.index){
+                let item = list[i].questionDetailList
+                for(let j=0; j<item.length; j++){
+                    if(j == this.subIndex){
+                        questionId = item[j].id 
+                        break  
+                    }
+                }
+            }
         }
-        let path = `/packagePractise/pages/report/report?${this.$hq.utils.paramsStringify(params)}`
+        
+        let params = {
+            questionId:questionId,
+            type:3,
+            mode:this.options.mode
+        }
+        let path = `/packagePractise/pages/practise/practise?${this.$hq.utils.paramsStringify(params)}`
+
+        console.log(999,'path',path)
         return {
             title:'这道难题需要您帮我看一看',
             path:path,

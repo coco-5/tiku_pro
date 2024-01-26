@@ -39,7 +39,22 @@ let utils = {
         if(seconds < 60){
             return `${s}秒`
         }else{
-            return `${h}时${m}分${s}秒`
+            if(h>0){
+                return `${h}时${m}分${s}秒`
+            }else{
+                return `${m}分${s}秒`    
+            }
+        }
+    },
+    audioDurationFormat(seconds){
+        let h = this.formatNumber(parseInt(seconds/3600))
+        let m = this.formatNumber(parseInt((seconds%3600)/60))
+        let s = this.formatNumber(seconds%60)
+
+        if(h>0){
+            return `${h}:${m}:${s}`
+        }else{
+            return `${m}:${s}`    
         }
     },
     compareBaseSDKVersion(v){

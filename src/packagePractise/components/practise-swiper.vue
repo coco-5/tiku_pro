@@ -23,11 +23,16 @@
                 v-else
             >
                 <view class="q-top">
-                    <view class="q-type">{{questionType[item.quType]}}</view>
+                    <view class="q-type">{{item.quTypeDesc || questionType[item.quType]}}</view>
                     <view class="process"><text>{{showIndex}}</text>/{{questionCount}}</view>
                 </view>
 
                 <view class="title">
+                    <template v-if="item.audioPath">
+                        <caudio
+                            :audioPath="item.audioPath"
+                        ></caudio>
+                    </template>
                     <rich-text :nodes="item.showContent"></rich-text>
                 </view>
 
@@ -109,8 +114,9 @@
 // state 1练习 2考试
 import utils from '@/utils/utils'
 import answer from './answer.vue'
+import caudio from './caudio.vue'
 export default {
-  components: { answer },
+  components: { answer, caudio },
     props:{
         options:{
             type:Object
@@ -180,7 +186,7 @@ export default {
             questionStyle:''
         }
     },
-    created(){
+    mounted(){
         this.initStyle()
     },
     methods:{

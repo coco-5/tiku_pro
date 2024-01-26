@@ -139,6 +139,14 @@ export function getPracticeApi(params){
     })
 }
 
+export function getQuestionApi(params){
+    return new Promise((resolve, reject)=>{
+        _this.$http.post(`/tiku/question/practice/analysis/singleQuestion`,params).then((res)=>{
+            resolve(res)
+        })
+    })
+}
+
 export function getPaperDetailApi(params){
     params = Object.assign({
         openid : uni.getStorageSync('openid') || ''    

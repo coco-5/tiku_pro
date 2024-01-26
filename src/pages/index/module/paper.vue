@@ -124,6 +124,7 @@ export default {
 <style lang="scss" scoped>
 .paper {
     padding:32rpx;
+    background:linear-gradient(180deg, #FFF 0%, #F6F6F6 100%);
     .hd {
         height:76rpx;
         line-height:76rpx;

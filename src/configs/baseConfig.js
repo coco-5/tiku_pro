@@ -5,7 +5,7 @@ let baseConfig = {
     appName : 'tiku_pro',
     proxyApi:{
         //tiku:'https://www.xuexizhushou.cn',//xuexizhushou.cn
-        tiku:'http://117.50.176.30:8181'
+        tiku:'https://www.xuexizhushou.cn/quick'//https://www.xuexizhushou.cn
         //http://www.river0413.top
     }
 }

@@ -65,7 +65,6 @@ export default {
         mode:{
             deep:true,
             handler(n){
-                console.log(999,222,'mode',n)
             }
         }
     },
@@ -82,7 +81,6 @@ export default {
                 paperId:item.id,
                 mode:this.mode
             }
-            console.log(999,111,params)
             uni.navigateTo({
                 url : `/packagePractise/pages/paperDetail/paperDetail?${this.$hq.utils.paramsStringify(params)}`
             })
@@ -92,7 +90,6 @@ export default {
             let params = {
                 mode:this.mode  
             }
-            console.log(999,222,params)
             uni.navigateTo({
                 url : `/packagePractise/pages/paperList/paperList?${this.$hq.utils.paramsStringify(params)}`
             })

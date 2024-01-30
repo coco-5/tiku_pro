@@ -58,7 +58,7 @@
                             v-for="(itemSort,itemIndex) in item.sort"
                             :key="itemIndex"
                         >
-                            {{itemSort.showIndex}}
+                            {{itemSort.showText}}
                         </view>
                     </view>
                 </view>
@@ -107,6 +107,7 @@ export default {
     },
     onLoad(e){
         this.options = e
+        this.examInfo = uni.getStorageSync('examInfo')//选择考试
 
         this.getList()
     },
@@ -157,7 +158,6 @@ export default {
                     data.usedTimeFormat = utils.secondsFormat(data.usedTime)
 
                     this.report = data
-                    console.log(999,'report',data)
                     this.initQuestionList(data.questionGroupList)
                 })
             })
@@ -168,6 +168,7 @@ export default {
             let sort = []
             let count = 1
             let page = 1
+            let examId = this.examInfo.id
 
             data.forEach((value,index)=>{
                 obj = {}
@@ -182,12 +183,26 @@ export default {
                         }else if(m.answerState == 1){
                             className = 'right'    
                         }
+
+                        let text = ''
+                        if(examId == 4){
+                            if(count == 1){
+                                text = '写'
+                            }else if(count == 57){
+                                text = '翻'
+                            }else{
+                                text = count - 1   
+                            }
+                        }else{
+                            text = count    
+                        }
                         sort.push({
                             topIndex:index+1+page,
                             subIndex:n,
                             sate:m.answerState,
                             className,
-                            showIndex:count
+                            showIndex:count,
+                            showText:text
                         })  
                         count++ 
                     })

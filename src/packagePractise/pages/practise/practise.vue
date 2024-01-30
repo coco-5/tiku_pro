@@ -8,7 +8,8 @@
             <template #content>
                 <use-time 
                     :options="options"
-                    :time="paperDetail.answerTime"
+                    :time="answerTime"
+                    v-if="options.type == 1"
                 >
                 </use-time>
             </template>
@@ -47,7 +48,7 @@
 
 <script>
 import utils from '@/utils/utils'
-import { getPaperDetailApi, startApi, endApi, getPracticeApi, analysisApi, getQuestionApi } from '@/utils/api'
+import { getPaperDetailApi, getDetailByPaperIdApi, startApi, endApi, getPracticeApi, analysisApi, getQuestionApi } from '@/utils/api'
 import PractiseFooter from '../../components/practise-footer.vue'
 import practiseSwiper from '../../components/practise-swiper.vue'
 import useTime from '../../components/use-time.vue'
@@ -63,6 +64,7 @@ export default {
             answerDataObj:{},//答题数据
             ansCardList:[],//答题卡
             paperDetail:'',
+            answerTime:0
         }
     },
     onLoad(e){
@@ -70,9 +72,11 @@ export default {
         // mode 1题海 2章节 3历年真题 4模拟考试
         // state 1练习 2考试
 
-        this.options = e
+        //如果考试是四六级，答题卡特殊处理
 
+        this.options = e
         this.startTime = utils.timeStamp()
+        this.examInfo = uni.getStorageSync('examInfo')//选择考试
 
         if(this.options.type == 1){
             this.startPaper().then(()=>{
@@ -131,7 +135,8 @@ export default {
         },
         getList(){
             let list = [
-                this.getDetail()
+                this.getDetail(),
+                this.getPaper()
             ]
 
             uni.showLoading()
@@ -156,6 +161,19 @@ export default {
                 })
             })
         },
+        getPaper(){
+            let params = {
+                paperId:this.options.paperId    
+            }
+
+            getDetailByPaperIdApi(params).then((res)=>{
+                if(res.data.code == 0){
+                    let data = JSON.parse(utils.decryptByAES(res.data.encryptParam))
+
+                    this.answerTime = data.answerTime
+                }
+            })
+        },
         getDetail(){
             let params = {
                 paperId:this.options.paperId
@@ -167,7 +185,7 @@ export default {
                         let data = JSON.parse(utils.decryptByAES(res.data.encryptParam))
 
                         this.paperDetail = data.questionGroupList
-                        console.log(999,'paperDetail',this.paperDetail)
+                        //console.log(999,'paperDetail',this.paperDetail)
                         resolve()
                     }
                 })
@@ -180,6 +198,7 @@ export default {
             let showIndex = 1
             let topIndex = 0
             let list = []//重新组合的做题数据
+            let examId = this.examInfo.id
 
             groupList.forEach((value,index)=>{
                 //重置
@@ -193,6 +212,20 @@ export default {
 
                 value.questionList && value.questionList.length > 0 && value.questionList.forEach((v,i)=>{
                     v.showContent = utils.replaceHTMLChar(v.content)
+
+                    //四六级考试右上角显示需要特殊处理
+                    if(examId == 4){
+                        if(index == 0){
+                            v.isSpecial = 1
+                            v.showText = '写作'
+                        }else if(index == 3){
+                            v.isSpecial = 1
+                            v.showText = '翻译'
+                        }else{
+                            v.isSpecial = 0
+                        }
+                    }
+
                     v.questionDetailList && v.questionDetailList.length > 0 && v.questionDetailList.forEach((itemDetail,indexDetail)=>{
                         itemDetail.showContent = utils.replaceHTMLChar(itemDetail.content) 
                         itemDetail.showIndex = showIndex
@@ -202,11 +235,26 @@ export default {
                             })
                         }
 
+                        let text = ''
+                        if(examId == 4){
+                            if(showIndex == 1){
+                                text = '写'
+                            }else if(showIndex == 57){
+                                text = '译'
+                            }else{
+                                text = showIndex - 1   
+                            }
+                        }else{
+                            text = showIndex    
+                        }
+                        itemDetail.showText = text
+
                         sort.push({
                             id:itemDetail.id,
                             topIndex:topIndex+index+1,
                             subIndex:indexDetail,
                             showIndex:showIndex,
+                            showText:text,
                             on:0,
                             answer:0
                         })
@@ -231,7 +279,8 @@ export default {
             this.ansCardList = ansCardList
             this.questionList = list
 
-            console.log(999,'groupList',groupList)
+            //console.log(999,'ansCardList',this.ansCardList)
+            //console.log(999,'questionList',this.questionList)
         },
         initAnalysis(data){
             let analysis = data
@@ -240,7 +289,9 @@ export default {
             let showIndex = 1
             let topIndex = 0
             let list = []//重新组合的做题数据
+            let examId = this.examInfo.id
 
+            console.log(999,'analysis',analysis)
             analysis.forEach((value,index)=>{
                 //重置
                 let item = {}
@@ -249,10 +300,22 @@ export default {
                 item.description = value.description 
 
                 value.groupIsDesc = 1
-                list.push(value)
+                //list.push(value)
                 
                 value.analysisList.forEach((v,i)=>{
                     v.showContent = utils.replaceHTMLChar(v.content)
+                    //四六级考试右上角显示需要特殊处理
+                    if(examId == 4){
+                        if(index == 0){
+                            v.isSpecial = 1
+                            v.showText = '写作'
+                        }else if(index == 3){
+                            v.isSpecial = 1
+                            v.showText = '翻译'
+                        }else{
+                            v.isSpecial = 0
+                        }
+                    }
                     v.analysisDetailList.forEach((itemDetail,indexDetail)=>{
                         itemDetail.showContent = utils.replaceHTMLChar(itemDetail.content)  
                         itemDetail.showIndex = showIndex
@@ -274,11 +337,27 @@ export default {
                         }
                         itemDetail.rightOption = rightOption.join(',')
 
+                        let text = ''
+                        if(examId == 4){
+                            if(showIndex == 1){
+                                text = '写'
+                            }else if(showIndex == 57){
+                                text = '译'
+                            }else{
+                                text = showIndex - 1   
+                            }
+                        }else{
+                            text = showIndex    
+                        }
+                        itemDetail.showText = text
+
+                        console.log(999,111,'topIndex',topIndex)
                         sort.push({
                             id:itemDetail.questionId,
-                            topIndex:topIndex+index+1,
+                            topIndex:topIndex,
                             subIndex:indexDetail,
                             showIndex:showIndex,
+                            showText:text,
                             on:0,
                             answer:0
                         })
@@ -302,9 +381,7 @@ export default {
             this.answerDataObj = answerDataObj
             this.ansCardList = ansCardList
             this.questionList = list
-
-
-            console.log(999,'questionList',list)
+            console.log(999,'ansCardList',ansCardList)
         },
         getQuestion(){
             let params = {
@@ -395,12 +472,13 @@ export default {
                 params.paperId = this.options.paperId
             }
 
+            console.log(999,'answerDataObj',this.answerDataObj)
+
             endApi(params).then((res)=>{
                 if(res.data.code == 0){
                     let data = JSON.parse(utils.decryptByAES(res.data.encryptParam))
 
                     this.endData = data
-                    console.log(999,'end',this.endData)
                     if(this.endData.state != -1){
                         this.goReport()
                     }

@@ -128,7 +128,7 @@
                                 v-for="(v,i) in item.sort" 
                                 :key="i" 
                             >
-                                {{v.showIndex}}
+                                {{v.showText}}
                             </view>
                         </view>
                     </view>
@@ -189,7 +189,6 @@ export default {
                         }
                     })
                 }
-                console.log(999,'list',this.list)
             }
         },
         ansCardList:{

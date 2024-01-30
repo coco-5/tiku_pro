@@ -34,7 +34,8 @@ export default {
             useTime:'00:00:00'
         }
     },
-    created(){
+    mounted(){
+        //this.processingTime()
     },
     destroyed(){
         if(this.countDownTimer){
@@ -51,7 +52,7 @@ export default {
         },
         // 倒计时
         setCountDown(){
-            let second = Number(this.time || 0) * 60
+            let second = Number(this.time || 0) 
 
             this.countDownTimer = setInterval(() => {
                 second--

@@ -24,7 +24,14 @@
             >
                 <view class="q-top">
                     <view class="q-type">{{item.quTypeDesc || questionType[item.quType]}}</view>
-                    <view class="process"><text>{{showIndex}}</text>/{{questionCount}}</view>
+                    <view class="process">
+                        <block v-if="item.isSpecial == 1">
+                            {{item.showText}}
+                        </block>
+                        <block v-else>
+                            <text>{{showIndex}}</text>/{{questionCount}}
+                        </block>
+                    </view>
                 </view>
 
                 <view class="title">
@@ -56,7 +63,7 @@
                                 v-for="(itemDetail,indexDetail) in item.questionDetailList"
                                 :key="indexDetail"
                             >
-                                {{itemDetail.showIndex}}题
+                                {{itemDetail.showText}}题
                             </view>
                         </scroll-view>
                     </view>
@@ -143,6 +150,7 @@ export default {
             handler(n){
                 if(n){
                     this.setCount()
+                    this.setShowIndex()
                 }    
             }
         },
@@ -205,7 +213,7 @@ export default {
         },
         setShowIndex(){ 
             if(!this.list[this.index].groupIsDesc){
-                this.showIndex = this.list[this.index].questionDetailList[0].showIndex
+                this.showIndex = this.list[this.index].questionDetailList[0].showText
             }
         },
         changeSwiper(e){
@@ -330,8 +338,17 @@ export default {
             width:100%;
         }
         .question-bd {
-            display:none;
+            animation:bottom 0.6s;
         }
+    }
+}
+
+@keyframes bottom {
+    from {
+        height:calc(100% - 104rpx - 40% - 64rpx - 100rpx);
+    }
+    to {
+        height:0;
     }
 }
 .q-top {

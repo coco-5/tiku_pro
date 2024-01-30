@@ -59,7 +59,6 @@ export default {
         options:{
             deep:true,
             handler(n){
-                console.log(999,333,'options',n)
             }
         }
     },

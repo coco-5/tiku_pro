@@ -54,12 +54,10 @@ export default{
                 this.currentTime = utils.audioDurationFormat(this.audioCtx.duration)
 
                 this.audioCtx.onPlay(()=>{
-                    console.log(999,'onPlay',this.audioCtx.onTimeUpdate)
                     this.playing = true     
                 })
 
                 this.audioCtx.onEnded((e)=>{
-                    console.log(999,'onEnded')
                     setTimeout(()=>{
                         this.playing = false
                         this.percentage = 0
@@ -69,7 +67,6 @@ export default{
                 })
 
                 this.audioCtx.onTimeUpdate(()=>{
-                    //console.log(999,'onTimeUpdate')
                     if(!this.getDuration){
                         this.audioDuration = utils.audioDurationFormat(Math.floor(this.audioCtx.duration))
                         this.getDuration = true
@@ -81,7 +78,6 @@ export default{
                     let duration = Math.round(this.audioCtx.duration * 10)
                     let percentage = Math.ceil((current / duration) * 100)
                     this.percentage = percentage
-                    //console.log(999,'percentage',percentage)
                 })
             }
         })

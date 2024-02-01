@@ -185,7 +185,6 @@ export default {
                         let data = JSON.parse(utils.decryptByAES(res.data.encryptParam))
 
                         this.paperDetail = data.questionGroupList
-                        //console.log(999,'paperDetail',this.paperDetail)
                         resolve()
                     }
                 })
@@ -204,6 +203,8 @@ export default {
                 //重置
                 let item = {}
                 let sort = []
+
+                value.description = value.description.replace(/\n/g,'<br/><br/>')
                 item.name = value.name
                 item.description = value.description 
 
@@ -212,6 +213,8 @@ export default {
 
                 value.questionList && value.questionList.length > 0 && value.questionList.forEach((v,i)=>{
                     v.showContent = utils.replaceHTMLChar(v.content)
+                    v.showContent = v.showContent.replace(/\n/g,'<br/><br/>')
+                    v.showContent = v.showContent.replace(/\<p/g,'<p style="margin-bottom:16px;"')
 
                     //四六级考试右上角显示需要特殊处理
                     if(examId == 4){
@@ -493,7 +496,7 @@ export default {
             }
 
             uni.redirectTo({
-                url : `/packagePractise/pages/report/report?${this.$hq.utils.paramsStringify(params)}`
+                url : `/packagePractise/pages/report/report?${utils.paramsStringify(params)}`
             })
         }
     },
@@ -517,7 +520,7 @@ export default {
             type:3,
             mode:this.options.mode
         }
-        let path = `/packagePractise/pages/practise/practise?${this.$hq.utils.paramsStringify(params)}`
+        let path = `/packagePractise/pages/practise/practise?${utils.paramsStringify(params)}`
 
         console.log(999,'path',path)
         return {

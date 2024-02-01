@@ -224,7 +224,7 @@ export default {
                 path = `/packagePractise/pages/paperList/paperList?`
             }
 
-            path += this.$hq.utils.paramsStringify(params)
+            path += utils.paramsStringify(params)
 
             uni.navigateTo({
                 url:path
@@ -241,7 +241,7 @@ export default {
                 subIndex:item.subIndex || 0
             }
 
-            path = `/packagePractise/pages/practise/practise?${this.$hq.utils.paramsStringify(params)}`
+            path = `/packagePractise/pages/practise/practise?${utils.paramsStringify(params)}`
 
             console.log(999,'path',path)
 

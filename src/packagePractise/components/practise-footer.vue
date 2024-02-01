@@ -66,6 +66,7 @@
                 <button 
                     class="btn-share"  
                     open-type="share" 
+                    plain="true"
                 >
                     <view class="pic">
                         <image src="https://oss-hqwx-edu24ol.hqwx.com/miniapp/socrazy/tikupro/common/ico_wx_logo.png" />
@@ -332,7 +333,8 @@ export default {
         margin:0;
         padding:0;
         background:transparent;
-        border:none;
+        border:1px solid transparent;
+        outline:0 none;
         .pic {
             margin-bottom:4rpx;
             width:46rpx;

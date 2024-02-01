@@ -109,6 +109,13 @@ export default {
             this.subjectIndex = index
             this.getPaper()
         }
+    },
+    onShareAppMessage(e){
+        return {
+            title:'送您你一个刷题神器，快来一起刷题吧！',
+            path:'',
+            imageUrl:''
+        }
     }
 }
 </script>

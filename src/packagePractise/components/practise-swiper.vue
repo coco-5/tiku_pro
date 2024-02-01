@@ -15,7 +15,11 @@
                 v-if="item.groupIsDesc == 1"
             >
                 <view class="name">{{item.name}}</view>
-                <view class="desc">{{item.description}}</view>
+                <view class="desc">
+                    <rich-text 
+                        :nodes="item.description"
+                    ></rich-text>
+                </view>
             </view>
             <view 
                 class="swiper-page"
@@ -24,14 +28,14 @@
             >
                 <view class="q-top">
                     <view class="q-type">{{item.quTypeDesc || questionType[item.quType]}}</view>
-                    <view class="process">
+                    <!-- <view class="process">
                         <block v-if="item.isSpecial == 1">
                             {{item.showText}}
                         </block>
                         <block v-else>
                             <text>{{showIndex}}</text>/{{questionCount}}
                         </block>
-                    </view>
+                    </view> -->
                 </view>
 
                 <view class="title">
@@ -338,19 +342,11 @@ export default {
             width:100%;
         }
         .question-bd {
-            animation:bottom 0.6s;
+            display:none;
         }
     }
 }
 
-@keyframes bottom {
-    from {
-        height:calc(100% - 104rpx - 40% - 64rpx - 100rpx);
-    }
-    to {
-        height:0;
-    }
-}
 .q-top {
     position:relative;
     margin:32rpx 32rpx 24rpx;
@@ -388,6 +384,11 @@ export default {
     font-size:30rpx;
     text-align:justify;
 }
+
+::v-deep p {
+        font-size:100rpx;
+        margin-bottom:24rpx;
+    }
 .question-hd {
     position:relative;
     height:100rpx;

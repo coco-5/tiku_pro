@@ -182,6 +182,13 @@ export default {
                 url:'/packageExam/pages/subject/subject'
             })
         }
+    },
+    onShareAppMessage(e){
+        return {
+            title:'送您你一个刷题神器，快来一起刷题吧！',
+            path:'/pages/index/index',
+            imageUrl:''
+        }
     }
 }
 </script>

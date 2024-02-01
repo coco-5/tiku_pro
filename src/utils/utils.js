@@ -169,6 +169,15 @@ let utils = {
     replaceHTMLChar(str){
         return str.replace(/&amp;/g, "&").replace(/&quot;/g, "\"").replace(/&mdash;/g, "—").replace(/&nbsp;/g, " ").replace(/&times;/g, "×").replace(/&divide;/g, "÷").replace(/(&ldquo;|&rdquo;)/g, "\"").replace(/(&lsquo;|&rsquo;)/g, "\'").replace(/&rarr;/g, "→").replace(/&ge;/g, "≥").replace(/&le;/g, "≤").replace(/&Omega;/g, "Ω").replace(/&Oslash;/g, "Ø").replace(/&plusmn;/g, "±").replace(/&sum;/g, "∑").replace(/&middot;/g, "·").replace(/&ang;/g, "∠").replace(/&deg;/g, "°").replace(/&radic;/g, "√").replace(/&hellip;/g, "……").replace(/&gt;/g, ">").replace(/&sup3;/g, "³").replace(/&sup2;/g, "²").replace(/&lt;/g, "<").replace(/font-family: \"[^\"]*\"/g, "").replace(/<p [^>]*>/g, "<p>").replace(/<span [^>]*>/g, "<span>").replace(/<img/g, "<img style='max-width:100%;height:auto;'").replace(/<p><br\/><\/p>/g, " ");
     },
+    // 拼接URL参数
+    paramsStringify(o){
+        if(Object.prototype.toString.call(o) != "[object Object]") return o
+        let arr = []
+        for(let k in o){
+          arr.push(k + '=' + o[k])
+        }
+        return arr.join('&')
+    },
 }
 
 export default utils

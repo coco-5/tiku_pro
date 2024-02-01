@@ -41,6 +41,7 @@
 </template>
 
 <script>
+import utils from '@/utils/utils'
 export default {
     props:{
         mode:{
@@ -82,7 +83,7 @@ export default {
                 mode:this.mode
             }
             uni.navigateTo({
-                url : `/packagePractise/pages/paperDetail/paperDetail?${this.$hq.utils.paramsStringify(params)}`
+                url : `/packagePractise/pages/paperDetail/paperDetail?${utils.paramsStringify(params)}`
             })
         },
         goMore(){
@@ -91,7 +92,7 @@ export default {
                 mode:this.mode  
             }
             uni.navigateTo({
-                url : `/packagePractise/pages/paperList/paperList?${this.$hq.utils.paramsStringify(params)}`
+                url : `/packagePractise/pages/paperList/paperList?${utils.paramsStringify(params)}`
             })
         }
     }

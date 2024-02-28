@@ -1,14 +1,14 @@
 <template>
-    <view 
-        class="navigation-bar"
-        :style="style"
-    >
+    <view class="navigation-bar">
         <view 
             class="blank" 
             :style="{height:(statusBarHeight+navBarHeight) + 'px'}"
         >
         </view>
-        <view class="fix">
+        <view 
+            class="fix"
+            :style="style" 
+        >
             <view 
                 class="status-bar" 
                 :style="{height:statusBarHeight + 'px'}"

@@ -158,6 +158,7 @@ export default {
                 id:data.subjectId,
                 name:data.subjectTitle
             }
+            console.log(999,'subjectInfo',12112,this.subjectInfo)
             uni.setStorageSync('subjectInfo',this.subjectInfo)
         },
         changeExam(e){

@@ -19,16 +19,29 @@
             class="content"
             :style="contentStyle"
         > 
-            <practise-swiper
-                :options="options"
-                :list="questionList"
-                :index="index"
-                :subIndex="subIndex"
-                :answerDataObj="answerDataObj"
-                @answer="answer"
-                @change="change"
+            <view 
+                class="audio"
+                v-if="audioShow"
             >
-            </practise-swiper>
+                <caudio
+                    :path="audioPath"
+                ></caudio>
+            </view>
+
+            <view 
+                :style="swiperStyle"
+            >
+                <practise-swiper
+                    :options="options"
+                    :list="questionList"
+                    :index="index"
+                    :subIndex="subIndex"
+                    :answerDataObj="answerDataObj"
+                    @answer="answer"
+                    @change="change"
+                >
+                </practise-swiper>
+            </view>
         </view>
 
         <practise-footer
@@ -52,8 +65,9 @@ import { getPaperDetailApi, getDetailByPaperIdApi, startApi, endApi, getPractice
 import PractiseFooter from '../../components/practise-footer.vue'
 import practiseSwiper from '../../components/practise-swiper.vue'
 import useTime from '../../components/use-time.vue'
+import caudio from '../../components/caudio.vue'
 export default {
-  components: { practiseSwiper, PractiseFooter, useTime },
+  components: { practiseSwiper, PractiseFooter, useTime, caudio },
     data(){
         return {
             options:'',
@@ -64,7 +78,10 @@ export default {
             answerDataObj:{},//答题数据
             ansCardList:[],//答题卡
             paperDetail:'',
-            answerTime:0
+            answerTime:0,
+            audioPath:'',
+            audioShow:false,
+            swiperStyle:0
         }
     },
     onLoad(e){
@@ -93,12 +110,18 @@ export default {
         }else if(this.options.type == 2){
             //this.index = this.options.topIndex
             //this.subIndex = this.options.subIndex
-            this.getAnalysis()
+            this.getAnalysisList()
         }else if(this.options.type == 3){
             this.getQuestion()
         }
     },
     onShow(){
+    },
+    onHide(){
+        this.audioShow = false
+    },
+    onUnload(){
+        this.audioShow = false
     },
     methods:{
         startPaper(){
@@ -146,6 +169,15 @@ export default {
                 uni.hideLoading()
             })
         },
+        getAnalysisList(){
+            let list = [
+                this.getAnalysis(),
+                this.getPaper()
+            ]
+
+            Promise.all(list).then(()=>{
+            })
+        },
         getAnalysis(){
             let params = {
                 practiceId:this.options.practiceId,
@@ -166,12 +198,15 @@ export default {
                 paperId:this.options.paperId    
             }
 
-            getDetailByPaperIdApi(params).then((res)=>{
-                if(res.data.code == 0){
-                    let data = JSON.parse(utils.decryptByAES(res.data.encryptParam))
-
-                    this.answerTime = data.answerTime
-                }
+            return new Promise((resolve, reject)=>{
+                getDetailByPaperIdApi(params).then((res)=>{
+                    if(res.data.code == 0){
+                        let data = JSON.parse(utils.decryptByAES(res.data.encryptParam))
+                        this.audioPath = data.questionGroupList[1].audioPath
+                        this.answerTime = data.answerTime
+                        resolve()
+                    }
+                })
             })
         },
         getDetail(){
@@ -294,7 +329,6 @@ export default {
             let list = []//重新组合的做题数据
             let examId = this.examInfo.id
 
-            console.log(999,'analysis',analysis)
             analysis.forEach((value,index)=>{
                 //重置
                 let item = {}
@@ -354,7 +388,6 @@ export default {
                         }
                         itemDetail.showText = text
 
-                        console.log(999,111,'topIndex',topIndex)
                         sort.push({
                             id:itemDetail.questionId,
                             topIndex:topIndex,
@@ -384,7 +417,6 @@ export default {
             this.answerDataObj = answerDataObj
             this.ansCardList = ansCardList
             this.questionList = list
-            console.log(999,'ansCardList',ansCardList)
         },
         getQuestion(){
             let params = {
@@ -395,8 +427,6 @@ export default {
                 getQuestionApi(params).then((res)=>{
                     if(res.data.code == 0){
                         let data = JSON.parse(utils.decryptByAES(res.data.encryptParam))
-
-                        console.log(999,'paperDetail',data)
                         resolve()
                     }
                 })
@@ -414,13 +444,40 @@ export default {
             let height = this.footerHeight + this.navigationHeight + 80
 
             if(height){
+                this.blockHeight = height
                 this.contentStyle = `height:calc(100vh - ${height}rpx);`
+                this.matchSwiperStyle()
             }
+        },
+        matchSwiperStyle(){
+            let audioHeight = this.audioShow ? 80 : 0
+            this.swiperStyle = `height:calc(100vh - ${this.blockHeight}rpx - ${audioHeight}rpx);`
         },
         change(topIndex,subIndex){
             this.index = topIndex
             this.subIndex = subIndex
             this.setAnswerCardOptionOn()
+            this.initAudio()
+        },
+        initAudio(){
+            if(this.examInfo.id == 4 && this.audioPath){
+                if(this.options.type == 1){
+                    if(this.index >= 3 && this.index < 6){
+                        this.audioShow = true
+                    }else{
+                        this.audioShow = false    
+                    }
+                }else if(this.options.type == 2){
+                    if(this.index >= 1 && this.index <= 3){
+                        this.audioShow = true
+                    }else{
+                        this.audioShow = false      
+                    }
+                }
+            }else{
+                this.audioShow = false    
+            }
+            this.matchSwiperStyle()
         },
         answer(answerDataObj,id){
             this.answerDataObj = answerDataObj
@@ -475,8 +532,6 @@ export default {
                 params.paperId = this.options.paperId
             }
 
-            console.log(999,'answerDataObj',this.answerDataObj)
-
             endApi(params).then((res)=>{
                 if(res.data.code == 0){
                     let data = JSON.parse(utils.decryptByAES(res.data.encryptParam))
@@ -493,6 +548,7 @@ export default {
                 practiceId:this.endData.practiceId,
                 stete:this.endData.type,
                 mode:this.options.mode,
+                paperId:this.options.paperId
             }
 
             uni.redirectTo({
@@ -533,4 +589,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.audio {
+    margin:20rpx 32rpx;
+}
 </style>

@@ -47,13 +47,14 @@
                 class="footer-content2"
                 v-else
             >
-                <view 
+                <!-- <view 
                     class="collection" 
+                    :class="currentQuestionItem.state == 1 ? 'active' : ''"
                     @click="editCollect"
                 >
                     <view class="pic"></view>
                     <view class="text">收藏</view>
-                </view>
+                </view> -->
                 <view 
                     class="datika" 
                     @click="isShowDialog = true"
@@ -140,10 +141,11 @@
 </template>
 
 <script>
+import utils from '@/utils/utils'
+import { getListCollectionApi, setQuestionCollectApi } from '@/utils/api'
 // type 1做题 2解析 3查看，没有解析
 // mode 1题海 2章节 3历年真题 4模拟考试
 // state 1练习 2考试
-import utils from '@/utils/utils'
 export default {
     props:{
         options:{
@@ -181,21 +183,16 @@ export default {
         subIndex:{
             deep:true,
             handler(n){
-                if(this.list.length > 0){
-                    this.list.forEach((item)=>{
-                        if(item.groupIsDesc == 1){
-                            this.qid = 0
-                        }else{
-
-                        }
-                    })
-                }
             }
         },
         ansCardList:{
             deep:true,
             handler(n){
-                
+                if(n){
+                    if(this.options.type == 2){
+                        this.initList() 
+                    }
+                }      
             }
         }
     },
@@ -203,13 +200,75 @@ export default {
         return {
             style:'',
             isShowDialog:false,
-            qid:'', 
+            currentQuestionItem:{}
         }
     },
     created(){
         this.emitCbFooterHeight()
     },
     methods:{
+        initList(){
+            let questionIds = []
+            this.ansCardList.forEach((item)=>{
+                item.sort.forEach((itemSort)=>{
+                    questionIds.push(itemSort.id)
+                })
+            })
+            this.questionIds = questionIds
+            this.getListCollection()
+        },
+        getListCollection(){
+            let params = {
+                questionIds:this.questionIds
+            }
+            getListCollectionApi(params).then((res)=>{
+                if(res.data.code == 0){
+                    let data = JSON.parse(utils.decryptByAES(res.data.encryptParam))
+
+                    this.collectionList = data.questionCollections
+                    this.getQuestionId()
+                }
+
+            })
+        },
+        getQuestionId(){
+            let ansCardList = this.ansCardList
+
+            for(let i=0; i<ansCardList.length; i++){
+                if(i == this.current){
+                    let item = this.ansCardList[i].sort
+                    for(let j=0; j<item.length; j++){
+                        if(j == this.subIndex){
+                            this.questionId = item[j].id
+                            break
+                        }
+                    }
+                }
+            }
+            this.getQuestionCollectItem()
+        },
+        getQuestionCollectItem(){
+            let collectionList = this.collectionList
+            for(let i=0; i<collectionList.length; i++){
+                if(collectionList[i].questionId == this.questionId){
+                    this.currentQuestionItem = collectionList[i]
+                    break
+                }
+            }
+        },
+        editCollect(){
+            let params = {
+                questionId:this.currentQuestionItem.questionId,
+                state:!this.currentQuestionItem.state
+            }
+            setQuestionCollectApi(params).then((res)=>{
+                if(res.data.code == 0){
+                    //let data = JSON.parse(utils.decryptByAES(res.data.encryptParam))
+                    console.log(999,'data',121212)
+                    this.currentQuestionItem.state = !this.currentQuestionItem.state
+                }
+            })
+        },
         emitCbFooterHeight(){
             this.style = `padding-bottom:${utils.fixIPhoneX() ? 68 : 0}rpx;`
             let height = 108 + (utils.fixIPhoneX() ? 68 : 0)
@@ -359,6 +418,9 @@ export default {
         font-size:30rpx;
         font-weight:500;
         color:#FFF;
+        &.disabled {
+            opacity:.5;
+        }
     }
 }
 .dialog-mask {

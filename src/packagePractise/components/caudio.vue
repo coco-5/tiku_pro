@@ -1,5 +1,7 @@
 <template>
-    <div class="audio-wrap">
+    <div 
+        class="audio-wrap"
+    >
         <div 
             class="audio-btn"
             :class="playing ? 'play' : ''"
@@ -25,12 +27,12 @@
 import utils from '@/utils/utils'
 export default{
     props:{
-        audioPath:{
+        path:{
             type:String
         }
     },
     watch:{
-        audioPath:{
+        path:{
             deep:true,
             handler(n){}
         }
@@ -46,10 +48,10 @@ export default{
     },
     mounted(){
         this.$nextTick(()=>{
-            if(this.audioPath){
+            if(this.path){
                 this.audioCtx = uni.createInnerAudioContext()
 
-                this.audioCtx.src = this.audioPath
+                this.audioCtx.src = this.path
                 this.percentage = 0
                 this.currentTime = utils.audioDurationFormat(this.audioCtx.duration)
 
@@ -57,7 +59,15 @@ export default{
                     this.playing = true     
                 })
 
+                this.audioCtx.onPause(()=>{
+                    this.playing = false     
+                })
+ 
+                this.audioCtx.onError((res)=>{ 
+                })
+
                 this.audioCtx.onEnded((e)=>{
+                    this.percentage = 100
                     setTimeout(()=>{
                         this.playing = false
                         this.percentage = 0
@@ -83,11 +93,16 @@ export default{
         })
     },
     destroyed(){
-        //this.audioCtx.destroy()
+        this.audioCtx.destroy()
     },
     methods:{
         play(){
-            this.audioCtx.play()
+            if(!this.playing){
+                this.audioCtx.play()
+            }else{
+                this.audioCtx.pause()      
+            }
+            
         }    
     }
 }
@@ -95,20 +110,20 @@ export default{
 
 <style lang="scss" scoped>
 .audio-wrap {
-    padding:24rpx;
-    height:60rpx;
-    line-height:60rpx;
+    padding:20rpx;
+    height:40rpx;
+    line-height:40rpx;
     background:#F2F9FF;
-    border-radius:54rpx;
+    border-radius:40rpx;
     color:#2575FF;
     .audio-btn {
         position:relative;
         display:inline-block;
-        margin-right:24rpx;
-        width:60rpx;
-        height:60rpx;  
+        margin-right:16rpx;
+        width:40rpx;
+        height:40rpx;  
         background:#2575FF;
-        border-radius:30rpx;
+        border-radius:20rpx;
         text-align:center;
         vertical-align:top;
         &:before {
@@ -119,17 +134,17 @@ export default{
             transform:translate(-50%,-50%);
             width:0;
             height:0;
-            border-top:14rpx solid transparent;
-            border-left:16rpx solid #FFF;
-            border-bottom:14rpx solid transparent;
-            border-right:16rpx solid transparent;
+            border-top:10rpx solid transparent;
+            border-left:12rpx solid #FFF;
+            border-bottom:10rpx solid transparent;
+            border-right:12rpx solid transparent;
         }
         &.play {
             &:before {
                 left:50%;
                 border:0 none;
-                width:18rpx;
-                height:18rpx;
+                width:14rpx;
+                height:14rpx;
                 background:#FFF;
             }
         }
@@ -137,8 +152,9 @@ export default{
     .progress {
         display:inline-block;
         width:500rpx;
+        height:40rpx;
         font-size:24rpx;
-        vertical-align:middle;
+        vertical-align:top;
         span {
             display:inline-block;
             margin:0 8rpx;
@@ -146,7 +162,7 @@ export default{
             vertical-align:middle;
         }
         .p {
-            width:300rpx;
+            width:330rpx;
         }
     }
 }

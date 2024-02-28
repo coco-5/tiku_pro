@@ -52,7 +52,7 @@ export default {
         },
         // 倒计时
         setCountDown(){
-            let second = Number(this.time || 0) 
+            let second = Number(this.time * 60 || 0) 
 
             this.countDownTimer = setInterval(() => {
                 second--
@@ -95,7 +95,7 @@ export default {
     color:#010B16;
     .icon-time { 
         display:inline-block; 
-        margin:0 auto; 
+        margin:10rpx auto 0; 
         width:44rpx; 
         height:44rpx; 
         background:url(https://oss-hqwx-edu24ol.hqwx.com/miniapp/tiku_pro/icon_time2.png) no-repeat; 
@@ -104,7 +104,7 @@ export default {
     }
     .text {
         display:inline-block;
-        margin-top:8rpx;
+        margin-top:18rpx;
         vertical-align:middle;
     }
 }

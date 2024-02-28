@@ -20,7 +20,11 @@
                             <view class="bd">
                                 <view class="avatar">
                                     <block v-if="isCompare">
-                                        <button class="btn-upload" open-type="chooseAvatar" @chooseavatar="chooseavatar">
+                                        <button 
+                                            class="btn-upload"
+                                            open-type="chooseAvatar" @chooseavatar="chooseavatar"
+                                            plain="true"
+                                        >
                                             <image 
                                                 class="face"
                                                 :src="avatar ? avatar : avatarDefault"
@@ -109,6 +113,7 @@ export default {
     },
     methods:{
         chooseavatar(e){
+            console.log(999,111,e.detail.avatarUrl)
             if(e.detail.avatarUrl){
                 this.uploadFile(e.detail.avatarUrl)
             }
@@ -130,10 +135,11 @@ export default {
         },
         uploadFile(filePath){
             uni.showLoading()
+            console.log(999,222)
 
 			uni.uploadFile({
 				//url:`http://www.river0413.top/question/user/uploadAvatar`,
-				url:`http://117.50.176.30:8181/question/user/uploadAvatar`,
+				url:`https://www.xuexizhushou.cn/quick/question/user/uploadAvatar`,
                 name:'avatar',
                 filePath:filePath,
                 success:(res)=>{
@@ -142,6 +148,7 @@ export default {
                         let json = JSON.parse(res.data)
                         if(json.code == 0){
                             let data = JSON.parse(utils.decryptByAES(json.encryptParam))
+                        console.log(999,333,data)
                             this.avatar = data.avatarUrl
                         }
                     }
@@ -244,6 +251,7 @@ export default {
         width:144rpx;
         height:144rpx;
         background:#FFF;
+        border:0 none;
     }
     .face {
         width:144rpx;

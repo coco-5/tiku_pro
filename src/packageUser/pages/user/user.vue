@@ -21,10 +21,12 @@
         </view>
 
         <view class="list">
-            <view class="item">
+            <!-- <view class="item">
                 <view class="icon"></view>
-                <view class="name">{{subjectInfo.name}}</view>
-            </view>
+                <view class="name">
+                    <c-exam></c-exam>
+                </view>
+            </view> -->
             <button 
                 class="item"
                 open-type="share"
@@ -58,7 +60,6 @@ export default {
         return {
             userInfo:'',
             isShowInfo:false,
-            subjectInfo:{},//科目数据
         }
     },
     onLoad(e){
@@ -66,8 +67,6 @@ export default {
     },
     onShow(){
         this.userInfo = uni.getStorageSync('userInfo')
-
-        this.subjectInfo = uni.getStorageSync('subjectInfo')
     },
     methods:{
         cbCloseUserinfo(){
@@ -83,7 +82,7 @@ export default {
             getUserinfoApi().then((data)=>{
                 this.userInfo = data
             })
-        }
+        },
     },
     onShareAppMessage(e){
         return {

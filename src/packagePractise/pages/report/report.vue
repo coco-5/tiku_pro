@@ -189,7 +189,7 @@ export default {
                             if(count == 1){
                                 text = '写'
                             }else if(count == 57){
-                                text = '翻'
+                                text = '译'
                             }else{
                                 text = count - 1   
                             }
@@ -238,7 +238,8 @@ export default {
                 type:2,
                 wrongFlag:type,
                 topIndex:item.topIndex || 0,
-                subIndex:item.subIndex || 0
+                subIndex:item.subIndex || 0,
+                paperId:this.options.paperId
             }
 
             path = `/packagePractise/pages/practise/practise?${utils.paramsStringify(params)}`

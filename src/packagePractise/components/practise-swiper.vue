@@ -39,11 +39,6 @@
                 </view>
 
                 <view class="title">
-                    <template v-if="item.audioPath">
-                        <caudio
-                            :audioPath="item.audioPath"
-                        ></caudio>
-                    </template>
                     <rich-text :nodes="item.showContent"></rich-text>
                 </view>
 
@@ -125,9 +120,8 @@
 // state 1练习 2考试
 import utils from '@/utils/utils'
 import answer from './answer.vue'
-import caudio from './caudio.vue'
 export default {
-  components: { answer, caudio },
+  components: { answer },
     props:{
         options:{
             type:Object
@@ -220,8 +214,8 @@ export default {
                 this.showIndex = this.list[this.index].questionDetailList[0].showText
             }
         },
-        changeSwiper(e){
-            this.$emit('change',e.detail.current,this.subIndex)
+        changeSwiper(e){ 
+            this.$emit('change',e.detail.current,0)
         },
         changesubSwiper(e){
             this.$emit('change',this.index, e.detail.current)

@@ -13,7 +13,6 @@
                     {{tabIndex == index ? '' : item.name}}
                 </view>
             </view>
-
             <view 
                 class="list"
                 v-if="!loading && paperList.length"
@@ -50,6 +49,7 @@ export default {
         subjectInfo:{
             deep:true,
             handler(n){
+                console.log(999,111,n)
                 if(n){
                     this.tabIndex = 0
                     this.getPaper()
@@ -65,7 +65,7 @@ export default {
     data(){
         return {
             mode:0,
-            loading:false,
+            loading:true,
             tabList:[
                 {
                     type:'lnzt',
@@ -96,13 +96,15 @@ export default {
                 pageSize:3,
                 pageNum:1
             }
+            console.log(999,333,'data',params)
         
             getPaperBySubjectIdApi(params).then((res)=>{
+                this.loading = false
                 if(res.data.code == 0){
                     let data = JSON.parse(utils.decryptByAES(res.data.encryptParam)).paperDTOList
 
+                    console.log(999,222,data)
                     this.paperList = data
-
                     uni.hideLoading()
                 }
             })  

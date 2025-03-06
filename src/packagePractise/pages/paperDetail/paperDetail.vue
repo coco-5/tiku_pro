@@ -83,6 +83,7 @@
                     <rich-text 
                         :nodes="paperDetail.description"
                     ></rich-text>
+                </view>
             </view>
         </view>
 

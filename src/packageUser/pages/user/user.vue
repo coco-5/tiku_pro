@@ -27,6 +27,12 @@
                     <c-exam></c-exam>
                 </view>
             </view> -->
+            <!-- <view class="item">
+                <view class="icon"></view>
+                <view class="name">
+                    我的收藏
+                </view>
+            </view> -->
             <button 
                 class="item"
                 open-type="share"

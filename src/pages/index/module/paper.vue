@@ -21,6 +21,7 @@
                     :mode="mode"
                     :list="paperList"
                     isMore="true"
+                    @showPop="showPop"
                 ></c-paper-list>
             </view>
 
@@ -49,7 +50,6 @@ export default {
         subjectInfo:{
             deep:true,
             handler(n){
-                console.log(999,111,n)
                 if(n){
                     this.tabIndex = 0
                     this.getPaper()
@@ -72,12 +72,12 @@ export default {
                     name:'历年真题',
                     mode:3,
                     
-                },
+                }/* ,
                 {
                     type:'mnks',
                     name:'模拟考试',
                     mode:4
-                }
+                } */
             ],
             tabIndex:0,
             paperList:[]
@@ -96,15 +96,52 @@ export default {
                 pageSize:3,
                 pageNum:1
             }
-            console.log(999,333,'data',params)
+
+            //subjectId 6 英语四级
+            //subjectId 7 英语六级
+            let mock = []
+
+            if(this.subjectInfo.id == 6){
+                mock = [
+                    {
+                        difficulty:3,
+                        name:'2024年12月大学英语四级真题',
+                        practicingNums:1235,
+                        type:'pop'
+                    },
+                    {
+                        difficulty:2,
+                        name:'2024年6月大学英语四级真题',
+                        practicingNums:2222,
+                        type:'pop'
+                    }
+                ]
+            }else if(this.subjectInfo.id == 7){
+                mock = [
+                    {
+                        difficulty:3,
+                        name:'2024年12月大学英语六级真题',
+                        practicingNums:1235,
+                        type:'pop'
+                    },
+                    {
+                        difficulty:2,
+                        name:'2024年6月大学英语六级真题',
+                        practicingNums:2222,
+                        type:'pop'
+                    }
+                ]
+            }
         
             getPaperBySubjectIdApi(params).then((res)=>{
                 this.loading = false
                 if(res.data.code == 0){
                     let data = JSON.parse(utils.decryptByAES(res.data.encryptParam)).paperDTOList
 
-                    console.log(999,222,data)
-                    this.paperList = data
+                    mock = mock.concat(data)
+
+                    this.paperList = mock
+
                     uni.hideLoading()
                 }
             })  
@@ -117,6 +154,9 @@ export default {
             this.mode = this.tabList[this.tabIndex].mode
 
             this.getPaper()
+        },
+        showPop(){
+            this.$emit('showPop')
         }
     }
 }

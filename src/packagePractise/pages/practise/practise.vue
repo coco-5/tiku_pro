@@ -56,9 +56,13 @@
             @practise="practise"
         >
         </practise-footer>
+
+        <c-wechat
+            v-if="options.type == 2"
+        ></c-wechat>
     </view>
 </template>
-
+ 
 <script>
 import utils from '@/utils/utils'
 import { getPaperDetailApi, getDetailByPaperIdApi, startApi, endApi, getPracticeApi, analysisApi, getQuestionApi } from '@/utils/api'

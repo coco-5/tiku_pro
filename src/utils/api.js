@@ -182,3 +182,15 @@ export function setQuestionCollectApi(params){
         })
     })
 }
+
+export function getPhoneNumberApi(params){
+    params = Object.assign({
+        openid : uni.getStorageSync('openid') || ''    
+    }, params)
+
+    return new Promise((resolve, reject)=>{
+        _this.$http.post(`/tiku/question/wx/getPhoneNumber`,params).then((res)=>{
+            resolve(res)
+        })
+    })
+}

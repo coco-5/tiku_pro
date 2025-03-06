@@ -91,6 +91,8 @@
                 </view>
             </template>
         </c-bottom>
+
+        <c-wechat></c-wechat>
     </view>
 </template>
 

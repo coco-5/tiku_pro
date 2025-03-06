@@ -43,9 +43,22 @@
         <paper
             :options="options"
             :subjectInfo="subjectInfo"
+            @showPop="showPop"
             v-if="examInfo && subjectInfo"
         >
         </paper>
+
+        <c-pop
+            height="60vh"
+            :isShow="isShowPop"
+            @cbClosePop="cbClosePop"
+        >
+            <template #content>
+                <pop
+                    @cbClosePop="cbClosePop"
+                ></pop>
+            </template>
+        </c-pop>
 
         <c-bottom
             :current="0"
@@ -62,8 +75,9 @@ import { getExamListApi } from '@/utils/api'
 import chapter from './module/chapter.vue'
 import tiku from './module/tiku.vue'
 import paper from './module/paper.vue'
+import pop from './module/pop.vue'
 export default {
-    components: { chapter, tiku, paper },
+    components: { chapter, tiku, paper, pop },
     data(){
         return{
             options:{},
@@ -73,6 +87,7 @@ export default {
             subjectIndex:0,//当前选择的科目
             examTitleList:[],//考试选择器列表
             examIndex:0,//考试选择器索引
+            isShowPop:false,//是否显示弹窗
         }
     },
     onLoad(e){
@@ -182,6 +197,14 @@ export default {
             uni.navigateTo({
                 url:'/packageExam/pages/subject/subject'
             })
+        },
+        showPop(){
+            this.isShowPop = true
+            console.log(999,111)
+        },
+        cbClosePop(){
+            this.isShowPop = false
+            console.log(999,222)
         }
     },
     onShareAppMessage(e){

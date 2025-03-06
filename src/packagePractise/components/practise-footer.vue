@@ -32,13 +32,22 @@
                         <image src="https://oss-hqwx-edu24ol.hqwx.com/miniapp/tushu_hqwx/icon-ans-card.png" />
                         <view>答题卡</view>
                     </view>
-                    <view 
+                    <button 
+                        class="item"
+                        plain="true"
+                        open-type="getPhoneNumber"
+                        @getphonenumber="getphonenumber"
+                    >
+                        <image src="https://oss-hqwx-edu24ol.hqwx.com/miniapp/tushu_hqwx/icon-ans-submit.png" />
+                        <view>提交试卷</view>
+                    </button>
+                    <!-- <view 
                         class="item" 
                         @click="submit" 
                     >
                         <image src="https://oss-hqwx-edu24ol.hqwx.com/miniapp/tushu_hqwx/icon-ans-submit.png" />
                         <view>提交试卷</view>
-                    </view>
+                    </view> -->
                 </view>
             </view>
 
@@ -142,7 +151,7 @@
 
 <script>
 import utils from '@/utils/utils'
-import { getListCollectionApi, setQuestionCollectApi } from '@/utils/api'
+import { getListCollectionApi, setQuestionCollectApi, getPhoneNumberApi, getUserinfoApi } from '@/utils/api'
 // type 1做题 2解析 3查看，没有解析
 // mode 1题海 2章节 3历年真题 4模拟考试
 // state 1练习 2考试
@@ -198,12 +207,14 @@ export default {
     },
     data(){
         return {
+            userInfo:{},
             style:'',
             isShowDialog:false,
             currentQuestionItem:{}
         }
     },
     created(){
+        this.userInfo = uni.getStorageSync('userInfo') || {}
         this.emitCbFooterHeight()
     },
     methods:{
@@ -293,6 +304,23 @@ export default {
         change(item){
             this.isShowDialog = false
             this.$emit('change',item.topIndex,item.subIndex)
+        },
+        getphonenumber(e){
+            let params = {
+                code:e.detail.code
+            }
+            getPhoneNumberApi(params).then(res=>{
+                if(res.data.code == 0){
+                    let data = JSON.parse(utils.decryptByAES(res.data.encryptParam))
+                    this.getUserinfo()
+                }
+            })
+        },
+        getUserinfo(){
+            getUserinfoApi().then((res)=>{
+                this.userInfo = uni.getStorageSync('userInfo')
+                this.submit()
+            })
         }
     }
 }
@@ -350,6 +378,11 @@ export default {
         color:#010B16;
         line-height:34rpx;
         text-align:center;
+    }
+    .item {
+        margin:0;
+        padding:0;
+        border:0 none;
     }
 }
 .footer-content2 {

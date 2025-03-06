@@ -140,7 +140,7 @@ export default {
 
 <style lang="scss" scoped>
 .navigation-bar {
-    background:#FFF;
+    //background:#FFF;
 }
 .fix {
     width:100%;

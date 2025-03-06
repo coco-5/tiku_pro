@@ -78,6 +78,10 @@ export default {
     },
     methods:{
         goPractise(item){
+            if(item.type == 'pop'){
+                this.$emit('showPop')
+                return
+            }
             let params = {
                 paperId:item.id,
                 mode:this.mode

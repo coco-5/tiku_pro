@@ -9,6 +9,15 @@
 				"navigationBarTextStyle":"black",
 				"navigationStyle":"custom"
 			}
+		},
+		{
+			"path": "pages/addCode/addCode",
+			"style": {
+				"navigationBarTitleText": "addCode",
+				"navigationBarBackgroundColor":"#FFF",
+				"navigationBarTextStyle":"black",
+				"navigationStyle":"custom"
+			}
 		}
 	],
 	"subPackages":[
@@ -69,6 +78,12 @@
 				},
 				{
 					"path": "pages/chapter/chapter",
+					"style": {
+						"navigationStyle":"custom"
+					}
+				},
+				{
+					"path": "pages/collect/collect",
 					"style": {
 						"navigationStyle":"custom"
 					}

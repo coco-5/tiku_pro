@@ -32,7 +32,7 @@
                         <image src="https://oss-hqwx-edu24ol.hqwx.com/miniapp/tushu_hqwx/icon-ans-card.png" />
                         <view>答题卡</view>
                     </view>
-                    <button 
+                    <!-- <button 
                         class="item"
                         plain="true"
                         open-type="getPhoneNumber"
@@ -40,14 +40,14 @@
                     >
                         <image src="https://oss-hqwx-edu24ol.hqwx.com/miniapp/tushu_hqwx/icon-ans-submit.png" />
                         <view>提交试卷</view>
-                    </button>
-                    <!-- <view 
+                    </button> -->
+                    <view 
                         class="item" 
                         @click="submit" 
                     >
                         <image src="https://oss-hqwx-edu24ol.hqwx.com/miniapp/tushu_hqwx/icon-ans-submit.png" />
                         <view>提交试卷</view>
-                    </view> -->
+                    </view>
                 </view>
             </view>
 

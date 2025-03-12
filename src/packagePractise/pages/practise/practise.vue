@@ -201,7 +201,6 @@ export default {
             let params = {
                 paperId:this.options.paperId    
             }
-
             return new Promise((resolve, reject)=>{
                 getDetailByPaperIdApi(params).then((res)=>{
                     if(res.data.code == 0){
@@ -320,6 +319,8 @@ export default {
             this.answerDataObj = answerDataObj
             this.ansCardList = ansCardList
             this.questionList = list
+
+
 
             //console.log(999,'ansCardList',this.ansCardList)
             //console.log(999,'questionList',this.questionList)

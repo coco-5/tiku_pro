@@ -49,7 +49,7 @@
         </paper>
 
         <c-pop
-            height="60vh"
+            height="65vh"
             :isShow="isShowPop"
             @cbClosePop="cbClosePop"
         >

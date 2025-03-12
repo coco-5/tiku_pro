@@ -6,12 +6,11 @@
                 @click="cbClosePop"
             > 
             </view>
-            <view class="title">2024年真题尚未开通</view>
+            <view class="title">2024年电子可打印版真题</view>
         </view>
         <view class="bd">
             <view class="title">添加助教依依</view>
-            <view class="desc">直接领取20~24年全部真题试卷和答案解析</view>
-            <view class="desc">订阅朋友圈每日学习打卡</view>
+            <view class="desc">直接领取</view>
             <image 
                 src="https://oss-hqwx-edu24ol.oss-cn-beijing.aliyuncs.com/miniapp/takepicture/packageAiKefu/code.png" 
                 show-menu-by-longpress="true"

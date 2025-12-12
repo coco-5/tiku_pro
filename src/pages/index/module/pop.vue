@@ -12,7 +12,7 @@
             <view class="title">添加助教依依</view>
             <view class="desc">直接领取</view>
             <image 
-                src="https://oss-hqwx-edu24ol.oss-cn-beijing.aliyuncs.com/miniapp/takepicture/packageAiKefu/code.png" 
+                src="https://oss-hqwx-edu24ol.oss-cn-beijing.aliyuncs.com/miniapp/takepicture/packageAiKefu/code1.png?v1" 
                 show-menu-by-longpress="true"
             />
             <view class="tips">长按识别二维码添加</view>
@@ -82,8 +82,8 @@ export default {
         }
         image {
             margin-top:32rpx;
-            width:401rpx;
-            height:401rpx;
+            width:455rpx;
+            height:455rpx;
         }
     }
 }

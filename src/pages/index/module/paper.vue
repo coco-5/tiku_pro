@@ -102,19 +102,19 @@ export default {
             let mock = []
 
             if(this.subjectInfo.id == 6){
-                mock = [/* 
+                mock = [
                     {
                         difficulty:3,
-                        name:'2024年12月大学英语四级真题',
+                        name:'2025年12月大学英语四级真题',
                         practicingNums:1235,
                         type:'pop'
                     },
                     {
                         difficulty:2,
-                        name:'2024年6月大学英语四级真题',
+                        name:'2025年6月大学英语四级真题',
                         practicingNums:2222,
                         type:'pop'
-                    } */
+                    }
                 ]
             }else if(this.subjectInfo.id == 7){
                 mock = [/* 

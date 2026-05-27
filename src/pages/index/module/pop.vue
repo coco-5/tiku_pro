@@ -6,13 +6,13 @@
                 @click="cbClosePop"
             > 
             </view>
-            <view class="title">2024年电子可打印版真题</view>
+            <view class="title">2026年电子可打印版真题</view>
         </view>
         <view class="bd">
-            <view class="title">添加助教依依</view>
-            <view class="desc">直接领取</view>
+            <view class="title">关注公众号</view>
+            <view class="desc">领取最新的四六级真题</view>
             <image 
-                src="https://oss-hqwx-edu24ol.oss-cn-beijing.aliyuncs.com/miniapp/takepicture/packageAiKefu/code1.png?v1" 
+                src="https://oss-hqwx-edu24ol.oss-cn-beijing.aliyuncs.com/miniapp/takepicture/packageAiKefu/code2.jpg?v1" 
                 show-menu-by-longpress="true"
             />
             <view class="tips">长按识别二维码添加</view>
